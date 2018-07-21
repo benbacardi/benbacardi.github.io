@@ -1,2 +1,21 @@
-theme: jekyll-theme-cayman
-title: bencardy.co.uk
+# Permalinks
+permalink:           pretty
+
+# Setup
+title:               Ben Cardy
+#tagline:             'A Jekyll theme'
+description:         'Posts on networking, Lego, programming, photography, and other subjects'
+url:                 http://bencardy.co.uk
+baseurl:             ''
+gems:                [jekyll-paginate]
+paginate:            5
+paginate_path:       'page:num'
+
+# About/contact
+author:
+  name:              Ben Cardy
+  url:               bencardy.co.uk
+  email:             benbacardi@gmail.com
+
+# Custom vars
+version:             1.0.0
