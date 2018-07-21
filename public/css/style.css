@@ -1,0 +1,31 @@
+html {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Signika", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.post {
+    font-size: 85%;
+    line-height: 1.4rem;
+    border-bottom: 1px solid #eee;
+}
+
+.post:last-child {
+    border-bottom: none;
+}
+
+.post-date {
+    font-size: 0.75rem;
+}
+
+.archive .post-date {
+    display: inline;
+}
+
+.archive h2 small {
+    color: #9a9a9a;
+}

@@ -12,7 +12,15 @@ title: Home
       </a>
     </h1>
 
-    <span class="post-date">{{ post.date | date_to_string }}</span>
+    <span class="post-date">
+      {{ post.date | date: "%e %B %Y" }}
+      {% if post.categories %}
+        • Posted in
+        {% for category in post.categories %}
+          <a href="{{ site.baseurl }}/categories/#{{ category|slugize }}">{{ category }}<a/>{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      {% endif %}
+    </span>
 
     {{ post.content }}
   </div>

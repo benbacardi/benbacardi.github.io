@@ -3,11 +3,11 @@ permalink:           pretty
 
 # Setup
 title:               Ben Cardy
-#tagline:             'A Jekyll theme'
+tagline:             'networking, lego, programming, photography, and more'
 description:         'Posts on networking, Lego, programming, photography, and other subjects'
 url:                 http://bencardy.co.uk
 baseurl:             ''
-gems:                [jekyll-paginate]
+#gems:                [jekyll-paginate, jekyll-archives]
 paginate:            5
 paginate_path:       'page:num'
 
@@ -19,3 +19,7 @@ author:
 
 # Custom vars
 version:             1.0.0
+
+plugins:
+    - jekyll-paginate
+
