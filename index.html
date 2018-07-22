@@ -17,7 +17,7 @@ title: Home
       {% if post.categories %}
         • Posted in
         {% for category in post.categories %}
-          <a href="{{ site.baseurl }}/categories/#{{ category|slugize }}">{{ category }}<a/>{% unless forloop.last %},{% endunless %}
+          <a href="{{ site.baseurl }}/categories/#{{ category|slugize }}">{{ category }}</a>{% unless forloop.last %},{% endunless %}
         {% endfor %}
       {% endif %}
     </span>
