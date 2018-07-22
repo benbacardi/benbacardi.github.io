@@ -3,7 +3,7 @@
 
   {% include head.html %}
 
-  <body class="theme-base-09 layout-reverse sidebar-overlay">
+  <body class="theme-base-{% if page and page.theme %}{{ page.theme }}{% else %}09{% endif %} layout-reverse sidebar-overlay">
 
     {% include sidebar.html %}
 
