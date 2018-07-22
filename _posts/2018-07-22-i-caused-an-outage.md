@@ -1,6 +1,6 @@
 ---
 layout: post
-title: I Caused an Outage
+title: Lessons Learnt from an Outage
 categories: Networking
 ---
 
