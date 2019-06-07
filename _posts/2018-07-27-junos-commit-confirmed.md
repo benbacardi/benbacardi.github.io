@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Junos: Confirm a commit cleanly"
+link: https://www.google.com
 categories: Networking
 ---
 
