@@ -2,7 +2,7 @@
 layout: post
 title: "Junos: Confirm a commit cleanly"
 link: https://www.google.com
-categories: Networking
+categories: Junos Networking
 ---
 
 For years, I have loved the fact that Junos allows you to perform a `commit confirmed` to apply the configuration with an automatic rollback in a certain number of minutes.
