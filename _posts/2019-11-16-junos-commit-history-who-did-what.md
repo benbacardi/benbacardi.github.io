@@ -7,7 +7,7 @@ categories: Junos
 
 Junos has always had one fantastic advantage over Cisco's IOS: the ability to stage a pending commit, and see a history of changes, rather than each command immediately being executed on the running config a soon as you hit Enter. 
 
-The `show | compare rollback X` command's has always been able to show you the difference between your current config and what the config was like _X_ commits ago. However, I've always found it difficult to figure out what exactly was done in a single commit (or batch of commits) if they weren't the most recent. That is, until I learnt of this command: `show system rollback compare X Y`! This lets you see the changes that were introduced just between the _X_ and _Y_ commits. 
+The `show | compare rollback X` command has always been able to show you the difference between your current config and what the config was like _X_ commits ago. However, I've always found it difficult to figure out what exactly was done in a single commit (or batch of commits) if they weren't the most recent. That is, until I learnt of this command: `show system rollback compare X Y`! This lets you see the changes that were introduced just between the _X_ and _Y_ commits. 
 
 Here's a real life example. Below is the commit history for a device at work. You can see there were a number of batches of commits going back in time where different individuals have done sole changes on the device:
 
@@ -23,16 +23,7 @@ ben@switch> show system commit
 7   2019-11-13 12:25:44 GMT by katerina via cli
 8   2019-11-13 12:24:53 GMT by katerina via cli
 9   2019-11-13 12:23:28 GMT by katerina via cli
-10  2019-11-13 12:18:56 GMT by katerina via cli
-11  2019-11-13 12:16:41 GMT by katerina via cli
-12  2019-11-13 11:58:41 GMT by katerina via cli
-13  2019-11-13 11:55:38 GMT by katerina via cli
-14  2019-11-13 11:52:18 GMT by katerina via cli
-15  2019-11-13 11:51:30 GMT by katerina via cli
-16  2019-11-13 11:49:12 GMT by katerina via cli
-17  2019-11-13 11:45:55 GMT by katerina via cli
-18  2019-11-13 11:44:50 GMT by katerina via cli
-19  2019-11-13 11:35:24 GMT by katerina via cli
+… output truncated … 
 20  2019-09-13 14:16:43 BST by ben via cli
 21  2019-09-13 14:15:27 BST by ben via cli
 22  2019-09-13 14:13:48 BST by ben via cli
@@ -56,13 +47,6 @@ ben@switch> show system commit
 40  2019-06-06 12:27:51 BST by bart via cli
 41  2019-05-15 13:07:07 BST by chris via cli
 42  2019-05-09 14:14:43 BST by chris via cli
-43  2019-04-01 08:52:43 BST by katerina via cli commit confirmed, rollback in 10mins
-44  2019-02-18 13:17:41 GMT by katerina via cli
-45  2019-02-18 13:15:40 GMT by katerina via cli
-46  2019-02-18 13:10:50 GMT by katerina via cli commit confirmed, rollback in 10mins
-47  2019-02-15 15:44:27 GMT by katerina via cli commit confirmed, rollback in 10mins
-48  2019-02-11 11:44:35 GMT by katerina via cli
-49  2019-01-15 14:03:53 GMT by katerina via cli commit confirmed, rollback in 10mins
 ```
 
 I needed to find what Stuart and Lewis had each introduced in their batches of changes back in August and June, respectively. This new command makes that trivially easy. 
@@ -72,9 +56,6 @@ Stuart's batches of changes were in commits 28–31. Running the following comma
 
 ```bash
 ben@switch> show system rollback compare 32 28
-
-```{master:0}
-ben@xs-edge-agg0> show system rollback compare 32 28
 [edit interfaces interface-range ir_stp_edge]
      member ge-0/0/10 { ... }
 +    member ge-0/0/6;
