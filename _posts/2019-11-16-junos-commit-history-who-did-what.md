@@ -2,7 +2,7 @@
 layout: post
 title: "Junos commit history: who did what?"
 link: https://www.juniper.net/documentation/en_US/junos/topics/reference/command-summary/show-system-rollback.html
-categories: Junos, Networking
+categories: Junos Networking
 ---
 
 Junos has always had one fantastic advantage over Cisco's IOS: the ability to stage a pending commit, and see a history of changes, rather than each command immediately being executed on the running config a soon as you hit Enter. 
