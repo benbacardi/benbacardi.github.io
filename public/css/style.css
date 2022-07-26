@@ -3,12 +3,16 @@ html {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Signika", Helvetica, Arial, sans-serif;
-    font-weight: 600;
+    font-family: "Special Elite", Helvetica, Arial, sans-serif;
+    /*font-weight: 200;*/
     letter-spacing: .2px;
 }
 
-.post {
+.post h1 {
+    font-size: 1.6rem;
+}
+
+.post, .page {
     font-size: 85%;
     line-height: 1.4rem;
     border-bottom: 1px solid #eee;
