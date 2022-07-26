@@ -4,7 +4,7 @@ permalink:           pretty
 # Setup
 title:               Ben Cardy
 tagline:             'networking, lego, programming, photography, and more'
-description:         'Posts on networking, Lego, programming, photography, and other subjects'
+description:         'Posts on networking, LEGO, programming, photography, and other subjects'
 url:                 http://bencardy.co.uk
 baseurl:             ''
 #gems:                [jekyll-paginate, jekyll-archives]

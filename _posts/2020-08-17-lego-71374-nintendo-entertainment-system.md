@@ -2,7 +2,7 @@
 layout: post
 title: "LEGO 71374 Nintendo Entertainment System"
 link: https://brickset.com/article/52670/review-71374-nintendo-entertainment-system
-categories: Lego
+categories: LEGO
 ---
 
 Beyond my budget (for now!), but the new NES LEGO set looks fantastic:
