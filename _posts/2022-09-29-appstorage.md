@@ -67,7 +67,7 @@ struct ContentView: View {
       hasPerformedInitialSync = UserDefaults.standard.hasPerformedInitialSync
     }
     .onChange(of: $hasPerformedInitialSync) { newValue in
-			UserDefaults.standard.hasPerformedInitialSync = newValue
+      UserDefaults.standard.hasPerformedInitialSync = newValue
     }
   }
 }
