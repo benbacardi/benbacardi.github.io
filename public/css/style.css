@@ -8,6 +8,10 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: .2px;
 }
 
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+    font-family: "Special Elite", monospace;
+}
+
 .post h1 {
     font-size: 1.6rem;
 }
