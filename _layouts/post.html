@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div class="post single-post">
-  <h1>{% if page.link %}<a href='{{ page.link }}'>{% endif %}{{ page.title }}{% if page.link %} <a href='{{ page.link }}'>{% endif %}{% if page.link %}</a>{% endif %}</h1>
+  <h1>{% if page.link %}<a href='{{ page.link }}'>{% endif %}{{ page.title }}{% if page.link %}</a>{% endif %}</h1>
   <small class="text-secondary">{{ page.date | date: "%e %B %Y" }}
     {% if page.categories %}
       •
