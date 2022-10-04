@@ -12,12 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="Ben Cardy">
   <meta name="description" content="{{ site.tagline }}">
-  {% if page %}
+
+  {% if page.url != "/" and page.name != "archive.html" and page.name != "categories.html" %}
   <meta property="og:title" content="{{ page.title }}">
   <meta property="og:description" content="{{ page.content | strip_html | truncatewords: 50 }}">
   <meta property="og:url" content="{{ site.baseurl }}{{ page.url }}">
   <meta property="og:site_name" content="{{ site.title }}">
   <meta property="og:type" content="article">
+
   {% if page.image %}
   <meta property="og:image" content="{{ site.baseurl }}{{ page.image }}">
   {% endif %}
