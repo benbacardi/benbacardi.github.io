@@ -17,6 +17,9 @@
   <meta property="og:description" content="{{ page.content | strip_html | truncatewords: 50 }}">
   <meta property="og:url" content="{{ site.baseurl }}{{ page.url }}">
   <meta property="og:site_name" content="{{ site.title }}">
+  {% if page.image %}
+  <meta property="og:image" content="{{ site.baseurl }}{{ page.image }}">
+  {% endif %}
   {% endif %}
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 

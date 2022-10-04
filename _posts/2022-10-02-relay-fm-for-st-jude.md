@@ -2,6 +2,7 @@
 layout: post
 title: "Relay FM for St. Jude"
 categories: Swift Apps Development
+image: /assets/IMG_0929.PNG
 ---
 
 September is over, and that means the end of another [Childhood Cancer Awareness Month](https://www.cclg.org.uk/ccam). For the last four years, the [Relay FM](https://www.relay.fm/) community has used the opportunity to raise money for [St. Jude Children's Research Hospital](https://www.stjude.org/about-st-jude.html?sc_icid=us-mm-missionstatement#mission), an institution dedicated to understanding, treating, and discovering new ways to defeat childhood cancer. Last year, they raised over $700,000. This year, they're set to match that amount again, taking the total raised in the last four years to over $2 million.
