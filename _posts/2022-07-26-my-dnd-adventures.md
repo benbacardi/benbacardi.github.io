@@ -3,6 +3,7 @@ layout: post
 title: "My D&D Adventures"
 categories: DnD
 date: 2022-07-26 15:00
+image: /assets/heroes.png
 ---
 
 When I first got into D&D a year or so ago, I created my first character for a play-by-post (PbP) game called *The Lost Jungles of Rabbad*. Since then, I've joined other PbP games, played a few live one-shots (via video call), starting running my own PbP game with a pre-rolled adventure from D&D Beyond, fought other players in two player-vs-player (PvP) arenas, and play-tested a couple of new campaign ideas from our DM.
