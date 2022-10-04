@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "UserDefaults, @AppStorage, and Data Types"
-categories: Swift
+categories: Swift Apps Development
 ---
 
 As I'm starting to play more seriously with iOS app development, Xcode, and Swift, I'm starting to come up with a variety of patterns I use in the various toy apps I mess around with that make working with certain APIs or frameworks easier. One of these is `UserDefaults`, which provides an easy way to store persistent data between app launches.
