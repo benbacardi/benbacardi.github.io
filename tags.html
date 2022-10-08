@@ -1,14 +1,18 @@
 ---
 layout: page
-title: Categories
+title: Tags
 ---
 
 <section class='archive'>
 
+    {% assign categories_array = "" | split:"|" %}
+
     {% for category in site.categories %}
+        {% assign category_name = category|first %}
+        {% assign categories_array = categories_array | push: category_name | uniq | sort %}
+    {% endfor %}
 
-        {% capture category_name %}{{ category | first }}{% endcapture %}
-
+    {% for category_name in categories_array %}
         <h2 id='{{ category_name | slugize }}'>
             {{ category_name }}
             <small>{{ site.categories[category_name].size }}</small>
@@ -19,7 +23,6 @@ title: Categories
                 <li><a href="{{ post.url }}">{{ post.title }}</a> <span class='post-date'>{{ post.date | date: "%e %B %Y" }}</span></li>
             {% endfor %}
         </ul>
-
     {% endfor %}
 
 </section>
