@@ -2,7 +2,6 @@
 layout: post
 title: "Useful Avrae Aliases"
 categories: DnD
-render_with_liquid: false
 ---
 
 [Avrae](https://avrae.io/) is a Discord bot that makes running and playing D&D play-by-post games much easier—it provides useful tools such as integration with [D&D Beyond](https://www.dndbeyond.com/), powerful dice-rolling options, and combat initiative tracking.
@@ -10,6 +9,8 @@ render_with_liquid: false
 However, there are some things it doesn't do well natively. For this, it provides a powerful scripting API via [aliases and snippets](https://avrae.readthedocs.io/en/latest/aliasing/aliasing.html) for you to extend its functionality with your own commands. Many people have written their own, and these are a few of the custom commands that we have set up in our games to make life just a little bit easier.
 
 To use any of these aliases, paste the text in the code blocks below into a DM with Avrae (or any channel they are a member of).
+
+{% raw  %}
 
 ## Quick Character Switcher
 
@@ -85,3 +86,5 @@ else:
 It relies on the fact that Avrae names the custom counters sensibly, in the format of "Feat Name: Spell Name". When typing `!featcast command -t Target1 -t Target2`, it will look for a custom counter named in that way that could possibly match the provided spell name. When it finds one, it checks for a free slot, and casts the spell (with the provided arguments), decrementing the counter.
 
 There are many feats and backgrounds that provide spells, and this alias has made handling them *much* easier. Hopefully it can be of some use in your games too!
+
+{% endraw  %}
