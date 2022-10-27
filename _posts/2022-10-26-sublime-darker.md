@@ -4,7 +4,7 @@ title: "Darker Sublime Text Plugin"
 categories: Python Development
 ---
 
-[Black](https://github.com/psf/black) is a popular code formatter for Python code, known for is opinionated uncompromising stance. It's incredibly helpful for teams working on common Python code to write in the same style, and Black makes that easy, without having to maintain a common set of configuration options between the team members. After all, there aren't any.
+[Black](https://github.com/psf/black) is a popular code formatter for Python code, known for its opinionated uncompromising stance. It's incredibly helpful for teams working on common Python code to write in the same style, and Black makes that easy, without having to maintain a common set of configuration options between the team members. After all, there aren't any.
 
 However, adding it to an existing codebase is difficult. It wants to reformat every source file, which can be a pain with version history by creating commits that are purely formatting changes, or adding misleading diffs to commits that are intended for something else. To help overcome this, [Darker](https://github.com/akaihola/darker) was created, which runs Black but only on the parts of code that have changed since the last commit. This is perfect for running as a post-save hook in your IDE, to consistently keep your code up to style without altering the parts of the source you haven't changed.
 
