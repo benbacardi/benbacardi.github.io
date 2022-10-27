@@ -23,4 +23,4 @@ class DarkerOnSave(sublime_plugin.EventListener):
             subprocess.call(["darker", filename], cwd=os.path.dirname(filename))
 ```
 
-To add this yourself, go to **Tools > Developer > New Plugin…** from the menubar, and replace the contents of the file with the above. Save the file as something like `darker-on-save.py` in the same location it was created in (the default in the save dialog box), and now every time you hit Save on a Python file, it'll ensure that every time you save, the code you added or altered is up to scratch with your style guide. Simple!
+To add this yourself, go to **Tools > Developer > New Plugin…** from the menubar, and replace the contents of the file with the above. Save the file as something like `darker-on-save.py` in the same location it was created in (the default in the save dialog box), and now every time you hit Save on a Python file, it'll ensure that the code you added or altered is up to scratch with your style guide. Simple!
