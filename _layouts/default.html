@@ -15,6 +15,8 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+
           {% assign pages_list = site.pages | sort:"url" %}
           {% for node in pages_list %}
             {% if node.title != null %}
