@@ -3,6 +3,7 @@ layout: post
 title: Swift Charts & Calendar Weekdays
 categories: Swift Development Programming
 date: 2023-01-20 16:30
+image: /assets/pendulum-weekday-chart.jpeg
 ---
 
 I've recently been working on adding a statistics section to [Pendulum](/pendulum/), the pen pal tracking app I develop with my friend [Alex](https://418teapot.net). This seemed like the perfect opportunity to use [Swift Charts](https://developer.apple.com/documentation/charts), Apple's new charting framework.
