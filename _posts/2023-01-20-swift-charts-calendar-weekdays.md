@@ -166,9 +166,7 @@ Finally, the `.chartForegroundStyleScale` modifier defines the colours to be use
 
 ---
 
-Having written all that, I've now discovered [`NumberBins`](https://developer.apple.com/documentation/charts/numberbins) thanks to this post about [plotting data distributions with Swift Charts](https://nilcoalescing.com/blog/PlottingDataDistributionsWithSwiftCharts/), which could end up simplifying some of the above code. If it does, I'll be back with another blog post about how I've changed it!
-
-For now, I'm quite impressed with Swift Charts and how easy it makes drawing a good looking chart, but there are definitely some things that could be more obvious about it. The lack of decent documentation *with plenty of examples and screenshots* being a very clear area for improvement!
+I'm quite impressed with Swift Charts and how easy it makes drawing a good looking chart, but there are definitely some things that could be more obvious about it. The lack of decent documentation *with plenty of examples and screenshots* being a very clear area for improvement!
 
 ---
 
