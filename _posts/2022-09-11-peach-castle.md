@@ -2,7 +2,8 @@
 layout: post
 title: "Review: 71408 Princess Peach's Castle"
 link: https://brickset.com/article/79601
-categories: LEGO Reviews
+categories:
+  - LEGO Reviews
 ---
 
 My final review of this year's new Princess Peach-themed Super Mario LEGO sets, this time for [Peach's Castle](https://brickset.com/sets/71408-1/Princess-Peach-s-Castle):

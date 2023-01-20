@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "Review: LEGO Monster Jam Trucks"
-categories: LEGO Reviews
+categories:
+  - LEGO Reviews
 image: https://images.brickset.com/news/88534_IMG_1897.jpg
 ---
 

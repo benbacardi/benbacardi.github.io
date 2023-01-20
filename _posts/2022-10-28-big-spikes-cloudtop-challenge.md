@@ -2,7 +2,8 @@
 layout: post
 title: "Review: 71409 Big Spike's Cloudtop Challenge"
 link: https://brickset.com/article/82125/review-71409-big-spike-s-cloudtop-challenge
-categories: LEGO Reviews
+categories:
+  - LEGO Reviews
 image: https://images.brickset.com/news/82125_IMG_1871.jpg
 ---
 

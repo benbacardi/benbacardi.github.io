@@ -2,7 +2,8 @@
 layout: post
 title: "Review: 71406 Yoshi's Gift House"
 link: https://brickset.com/article/82124/review-71406-yoshi-s-gift-house
-categories: LEGO Reviews
+categories:
+  - LEGO Reviews
 image: https://images.brickset.com/news/82124_IMG_1847.jpg
 ---
 

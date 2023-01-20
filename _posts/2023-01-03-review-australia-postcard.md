@@ -2,7 +2,8 @@
 layout: post
 title: "Review: 40651 Australia Postcard"
 link: https://brickset.com/article/88236/review-40651-australia-postcard
-categories: LEGO Reviews
+categories:
+  - LEGO Reviews
 image: https://images.brickset.com/news/88236_IMG_1873.jpg
 ---
 
