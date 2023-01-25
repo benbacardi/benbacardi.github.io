@@ -120,7 +120,7 @@ Adding borders in, it's obvious why:
 
 We *could* fix this in the same way that we pushed the titles to the left - but a better way would be to use the `frame` modifier on the `Text` views to tell them to expand to take all available space horizontally, rather than just what they require. This is a technique we can also use on the headings.
 
-We can do this by using `.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)`, telling SwiftUI that we want the frame to fill the entire width of its container, and align the text inside it to the left.
+We can do this by using `.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)`, telling SwiftUI that we want the frame to fill the entire width of its container, and align the text inside it to the left. In the code below, I've added it to four places: the two headers, and the two paragraphs.
 
 ```swift
 VStack(spacing: 10) {
@@ -211,7 +211,7 @@ extension View {
 }
 ```
 
-Now we can clean up our previous code, producing the same result but with a much neater and easier to remember:
+Now we can clean up our previous code, producing the same result but with a much neater and easier to remember view modifier:
 
 ```swift
 VStack(spacing: 10) {
