@@ -46,7 +46,7 @@ Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et d
 
 ![](/assets/swiftui-text/single-almost-full-plus-border.png)
 
-This is often **not** the behaviour we want from our views! If we had multiple paragraphs, or different sections as part of a stack, they wouldn't necessarily be aligned with each other, even if the space they fill:
+This is often **not** the behaviour we want from our views! If we had multiple paragraphs, or different sections as part of a stack, they wouldn't necessarily be aligned with each other, and it's entirely dependent on exactly what words are in each and where the line breaks fall.
 
 ```swift
 VStack(spacing: 10) {
