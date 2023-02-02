@@ -306,4 +306,58 @@ And finally, pass the binding through from the main view:
 WhatsNewSection(icon: "star.circle.fill", iconColor: .yellow, title: "Star Ratings Toggle", summary: "If you believe all your pens are your favourite, you can now turn off star ratings via Settings.", iconWidth: $iconWidth)
 ```
 
-The full code for this final solution can be found [on Github](https://gist.github.com/benbacardi/4df235736f03cd4cda5cc32d828a9298).
+### A better alternative
+
+For this particular situation, we can actually do away with the `PreferenceKey` entirely, if we switch our layout to using a `Grid`. Grids automatically size the width of their columns based on the widest cell within the column, which is exactly what we want. Here's a verison of the code using `Grid` instead:
+
+```swift
+struct WhatsNewGridRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let summary: String
+    
+    var body: some View {
+        GridRow(alignment: .top) {
+            Image(systemName: icon)
+                .font(.title)
+                .foregroundColor(iconColor)
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.headline)
+                Text(summary)
+            }
+            .fullWidth()
+        }
+    }
+    
+}
+
+struct GridWidthIcons: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            VStack {
+                Text("What's New!")
+                    .font(.largeTitle)
+                    .bold()
+                Text("Version 2023.01")
+            }
+            .padding(.bottom)
+            
+            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+                WhatsNewGridRow(icon: "star.circle.fill", iconColor: .yellow, title: "Star Ratings Toggle", summary: "If you believe all your pens are your favourite, you can now turn off star ratings via Settings.")
+                WhatsNewGridRow(icon: "square.and.arrow.up.fill", iconColor: .green, title: "Share Sheet Fix", summary: "Fixed an issue where the date in your Currently Ink'd shared image would not display correctly.")
+                WhatsNewGridRow(icon: "scroll.fill", iconColor: .blue, title: "Brand List Fix", summary: "Fixed issues with duplicate brands populating your Brand List.")
+                WhatsNewGridRow(icon: "ladybug.fill", iconColor: .red, title: "Misc. Bug Fixes", summary: "Plenty of other minor improvements.")
+            }
+            
+            Spacer()
+        }
+        .padding()
+    }
+}
+```
+
+The result is identical, with a little less code a lot less complexity. However, there are still some situations where you want icons or other views to match widths or heights but a grid isn't appropriate—there may be other content between the views, for example, that you don't want conforming to a grid—so the `PreferenceKey` method is still valuable to know.
+
+The full code for both solutions can be found [on Github](https://gist.github.com/benbacardi/4df235736f03cd4cda5cc32d828a9298).
