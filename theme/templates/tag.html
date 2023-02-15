@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Tag {{ tag }}{% endblock %}
+
+{% block content %}
+  {% set title = tag %}
+  {% include "list.html" %}
+{% endblock %}

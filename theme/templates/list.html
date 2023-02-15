@@ -1,0 +1,8 @@
+  <div class="post page single-post">
+    <ul>
+      <li><h3>{{ title }}</h3></li>
+      {% for article in articles_page.object_list %}
+        {% include "list-item.html" %}
+      {% endfor %}
+    </ul>
+  </div>

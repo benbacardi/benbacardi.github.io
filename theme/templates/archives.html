@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Archive{% endblock %}
+
+{% block content %}
+
+  <h1>Archive</h1>
+
+  <div class="post page single-post">
+
+    <section class="archive">
+
+      {% set ns = namespace(current_year=None, current_month=None) %}
+
+      {% for article in dates %}
+
+        {% if ns.current_year != article.date.year %}
+          {% if not loop.first %}</ul>{% endif %}
+          <h3 id='archive-{{ article.date.year }}'>{{ article.date.year }}</h3>
+        {% endif %}
+
+        {% if ns.current_month != article.date.month %}
+          {% if not loop.first %}</ul>{% endif %}
+          <h4 id='archive-{{ currentYear }}-{{ article.date.month }}'>{{ article.date.strftime("%B") }}</h4>
+          <ul>
+        {% endif %}
+
+        {% include "list-item.html" %}
+
+      {% if loop.last %}</ul>{% endif %}
+
+        {% set ns.current_year = article.date.year %}
+        {% set ns.current_month = article.date.month %}
+
+      {% endfor %}
+
+    </section>
+
+  </div>
+
+{% endblock %}

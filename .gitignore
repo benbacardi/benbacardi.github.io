@@ -7,3 +7,5 @@ Gemfile
 Gemfile.lock
 .bundle
 .DS_Store
+__pycache__
+output

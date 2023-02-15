@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block head %}
+
+<meta property="og:title" content="{{ article.title }}">
+<meta property="og:description" content="{{ article.summary|striptags }}">
+<meta property="og:url" content="{{ SITEURL }}{{ article.url }}">
+<meta property="og:site_name" content="{{ SITENAME }}">
+<meta property="og:type" content="article">
+
+{% if "image" in article.metadata %}
+<meta property="og:image" content="{{ SITEURL }}{{ article.metadata["image"] }}">
+{% endif %}
+
+<meta name="twitter:card" content="summary{% if "image" in article.metadata %}_large_image{% endif %}" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+{% endblock %}
+
+{% block content %}
+
+  {% set single_post = True %}
+  {% include "post.html" %}
+
+{% endblock %}

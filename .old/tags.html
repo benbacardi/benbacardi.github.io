@@ -1,0 +1,28 @@
+---
+layout: page
+title: Tags
+---
+
+<section class='archive'>
+
+    {% assign categories_array = "" | split:"|" %}
+
+    {% for category in site.categories %}
+        {% assign category_name = category|first %}
+        {% assign categories_array = categories_array | push: category_name | uniq | sort %}
+    {% endfor %}
+
+    {% for category_name in categories_array %}
+        <h2 id='{{ category_name | slugize }}'>
+            {{ category_name }}
+            <small>{{ site.categories[category_name].size }}</small>
+        </h3>
+
+        <ul>
+            {% for post in site.categories[category_name] %}
+                <li><a href="{{ post.url }}">{{ post.title }}</a> <span class='post-date'>{{ post.date | date: "%e %B %Y" }}</span></li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+</section>

@@ -1,0 +1,74 @@
+body {
+    border: 25px solid rgb(251, 171, 57);
+    border-width: 25px 0;
+}
+
+.screenshot {
+    min-height: 600px;
+    max-height:  75vh;
+    /*max-width: 75vh;*/
+}
+
+.mac-screenshot {
+    max-width: 45vw;
+}
+
+.app-icon {
+    height: 60px;
+    width: 60px;
+    border-radius: 12px;
+}
+
+h1 {
+    margin-bottom: 0;
+}
+
+.app-store-button {
+    height: 60px;
+}
+
+a {
+    color: rgb(251, 171, 57);
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(223, 136, 34);
+}
+
+@media (max-width: 768px) {
+    .screenshot {
+        min-height: auto;
+        max-height: auto;
+        width: 100%;
+    }
+    
+    .mac-screenshot {
+        max-width: 100%;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+
+    body {
+        background-color: rgb(26, 28, 38);
+    }
+
+    h1 {
+        color: white;
+    }
+
+    .bg-light {
+        background-color: rgb(46, 48, 58) !important;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .bg-light .text-secondary {
+        color:  rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .quote {
+        color: rgb(248, 249, 250) !important;
+    }
+
+}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Tags{% endblock %}
+
+{% block content %}
+
+  <h1>Tags</h1>
+
+  <div class="post page single-post">
+    <ul>
+      {% for tag, articles in tags|sort %}
+        <li><h3 id='{{ tag.slug }}'>{{ tag }}</h3></li>
+        {% for article in articles %}
+          {% include "list-item.html" %}
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endblock %}
+

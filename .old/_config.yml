@@ -1,0 +1,25 @@
+# Permalinks
+permalink:           /:year/:month/:day/:title/
+
+# Setup
+title:               Ben Cardy
+tagline:             'networking, lego, programming, photography, and more'
+description:         'Posts on networking, LEGO, programming, photography, and other subjects'
+url:                 http://bencardy.co.uk
+baseurl:             ''
+#gems:                [jekyll-paginate, jekyll-archives]
+paginate:            5
+paginate_path:       'page:num'
+
+# About/contact
+author:
+  name:              Ben Cardy
+  url:               bencardy.co.uk
+  email:             benbacardi@gmail.com
+
+# Custom vars
+version:             1.0.0
+
+plugins:
+    - jekyll-paginate
+    - jekyll-feed

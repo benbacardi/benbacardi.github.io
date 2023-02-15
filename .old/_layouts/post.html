@@ -1,0 +1,17 @@
+---
+layout: default
+---
+
+<div class="post single-post">
+  <h1>{% if page.link %}<a href='{{ page.link }}'>{% endif %}{{ page.title }}{% if page.link %}</a>{% endif %}</h1>
+  <small class="text-secondary">{{ page.date | date: "%e %B %Y" }}
+    {% if page.categories %}
+      •
+      {% for category in page.categories %}
+        <a href="{{ site.baseurl }}/tags/#{{ category|slugize }}">{{ category }}</a>{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% endif %}
+  </small>
+
+  {{ content }}
+</div>

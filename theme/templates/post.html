@@ -1,0 +1,28 @@
+  <div class="post {% if single_post %}single-post{% endif %}">
+
+    <h1>
+      {% if "link" in article.metadata %}
+        <a href="{{ article.metadata['link'] }}">{{ article.title }}</a>
+      {% else %}
+        {% if not single_post %}
+          <a href="{{ article.url }}">{{ article.title }}</a>
+        {% else %}
+          {{ article.title }}
+        {% endif %}
+      {% endif %}
+    </h1>
+    <small class="text-secondary">
+      <a href="{{ SITEURL }}{{ article.url }}" class="post-date">{{ article.date.strftime("%-d %B %Y") }}</a>
+      {% if article.category %}• <a href="{{ CATEGORIES_URL }}#{{ article.category.slug }}">{{ article.category.name }}</a>{% endif %}
+      {% if article.tags %}
+        •
+        {% for tag in article.tags %}
+          <a href="{{ TAGS_URL }}#{{ tag.slug }}">{{ tag.name }}</a>
+          {% if not loop.last %}•{% endif %}
+        {% endfor %}
+      {% endif %}
+    </small>
+
+    {{ article.content }}
+
+  </div>

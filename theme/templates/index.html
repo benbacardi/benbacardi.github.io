@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for article in articles_page.object_list %}
+  {% include "post.html" %}
+{% endfor %}
+
+<div class="pagination mb-5 d-flex justify-content-between">
+
+  {% if articles_page.has_next() %}
+    <a href="{{ SITEURL }}/{{ articles_next_page.url }}">← Older</a>
+  {% else %}
+    <span class="text-muted">← Older</span>
+  {% endif %}
+
+
+  {% if articles_page.has_previous() %}
+    <a href="{{ SITEURL }}/{{ articles_previous_page.url }}">Newer →</a>
+  {% else %}
+    <span class="text-muted">Newer →</span>
+  {% endif %}
+
+</div>
+
+{% endblock %}
