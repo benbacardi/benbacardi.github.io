@@ -1,7 +1,8 @@
-name: Deploy
+name: Pelican site CI
 
 on:
-  # Trigger the workflow on push on main branch,
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
   push:
     branches:
       - main
@@ -11,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        submodules: 'true'
-    - uses: rehanhaider/pelican-to-github-pages@v1.0.3
+    - uses: nelsonjchen/gh-pages-pelican-action@0.1.5
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        GH_PAGES_CNAME: bencardy.co.uk
