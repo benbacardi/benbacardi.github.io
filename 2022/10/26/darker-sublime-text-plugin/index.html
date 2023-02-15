@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Darker Sublime Text Plugin • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Darker Sublime Text Plugin">
+<meta property="og:description" content="Black is a popular code formatter for Python code, known for its opinionated uncompromising stance. It's incredibly helpful for teams working on common Python code to write in the same style, and Black makes that easy, without having to maintain a common set of configuration options between the team members …">
+<meta property="og:url" content="/2022/10/26/darker-sublime-text-plugin/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          Darker Sublime Text Plugin
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/26/darker-sublime-text-plugin/" class="post-date">26 October 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#python">Python</a>
+    </small>
+
+    <p><a href="https://github.com/psf/black">Black</a> is a popular code formatter for Python code, known for its opinionated uncompromising stance. It's incredibly helpful for teams working on common Python code to write in the same style, and Black makes that easy, without having to maintain a common set of configuration options between the team members. After all, there aren't any.</p>
+<p>However, adding it to an existing codebase is difficult. It wants to reformat every source file, which can be a pain with version history by creating commits that are purely formatting changes, or adding misleading diffs to commits that are intended for something else. To help overcome this, <a href="https://github.com/akaihola/darker">Darker</a> was created, which runs Black but only on the parts of code that have changed since the last commit. This is perfect for running as a post-save hook in your IDE, to consistently keep your code up to style without altering the parts of the source you haven't changed.</p>
+<p>The Darker documentation includes instructions on how to integrate the formatter with PyCharm, IntelliJ IDEA, Visual Studio Code, Vim, and Emacs—but I use Sublime Text. All it took was to write a simple Sublime Plugin, however, and we're off to the races:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">sublime_plugin</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+
+<span class="k">class</span> <span class="nc">DarkerOnSave</span><span class="p">(</span><span class="n">sublime_plugin</span><span class="o">.</span><span class="n">EventListener</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_post_save_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">file_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">match_selector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source.python&quot;</span><span class="p">):</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&quot;darker&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+</code></pre></div>
+
+<p>To add this yourself, go to <strong>Tools &gt; Developer &gt; New Plugin…</strong> from the menubar, and replace the contents of the file with the above. Save the file as something like <code>darker-on-save.py</code> in the same location it was created in (the default in the save dialog box), and now every time you hit Save on a Python file, it'll ensure that the code you added or altered is up to scratch with your style guide. Simple!</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

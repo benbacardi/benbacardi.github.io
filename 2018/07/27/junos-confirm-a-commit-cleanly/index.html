@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Junos: Confirm a commit cleanly" • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Junos: Confirm a commit cleanly"">
+<meta property="og:description" content="For years, I have loved the fact that Junos allows you to perform a commit confirmed to apply the configuration with an automatic rollback in a certain number of minutes. I have always believed that the only way to confirm the commit (i.e. stop the automatic rollback) was to …">
+<meta property="og:url" content="/2018/07/27/junos-confirm-a-commit-cleanly/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+        <a href="https://www.google.com">Junos: Confirm a commit cleanly"</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2018/07/27/junos-confirm-a-commit-cleanly/" class="post-date">27 July 2018</a>
+• <a href="/categories/#networking">Networking</a>        •
+          <a href="/tags/#junos">Junos</a>
+    </small>
+
+    <p>For years, I have loved the fact that Junos allows you to perform a <code>commit confirmed</code> to apply the configuration with an automatic rollback in a certain number of minutes.</p>
+<p>I have always believed that the only way to confirm the commit (i.e. stop the automatic rollback) was to <code>commit</code> again. This creates two commits in the commit history, one containing the actual config diff, and an empty one purely used to stop the rollback. I've always thought that this creates a somewhat messy commit history, and confuses the use of <code>show | compare rollback</code>:</p>
+<p>{% highlight bash %}
+[edit]
+ben@device&gt; run show system commit
+0   2018-07-27 08:44:26 BST by ben via cli
+1   2018-07-27 08:44:07 BST by ben via cli commit confirmed, rollback in 5mins
+2   2018-07-23 10:04:29 BST by ben via cli
+3   2018-07-23 10:03:58 BST by ben via cli commit confirmed, rollback in 2mins</p>
+<p>[edit]
+ben@device&gt; show | compare rollback 1</p>
+<p>[edit]
+ben@device&gt; # Huh, it's empty?! I'm sure I did some work...</p>
+<p>[edit]
+ben@device&gt; show | compare rollback 2
+[edit system]
+-   host-name old-device
++   host-name device</p>
+<p _="%" endhighlight>[edit]
+ben@device&gt; # Oh, there it is...</p>
+<p>However, today I learnt that a <code>commit check</code> is enough to stop the rollback, and doesn't create an empty commit! My commit histories are now much cleaner, and <code>show | compare rollback</code> commands a lot easier to work out what you're actually looking at.</p>
+<p>{% highlight bash %}
+[edit]
+ben@device&gt; run show system commit
+1   2018-07-27 08:44:07 BST by ben via cli commit confirmed, rollback in 5mins
+3   2018-07-23 10:03:58 BST by ben via cli commit confirmed, rollback in 2mins</p>
+<p _="%" endhighlight>[edit]
+ben@device&gt; show | compare rollback 1
+[edit system]
+-   host-name old-device
++   host-name device</p>
+<p>Much better!</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

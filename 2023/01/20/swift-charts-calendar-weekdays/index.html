@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Swift Charts & Calendar Weekdays • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Swift Charts & Calendar Weekdays">
+<meta property="og:description" content="I've recently been working on adding a statistics section to Pendulum, the pen pal tracking app I develop with my friend Alex. This seemed like the perfect opportunity to use Swift Charts, Apple's new charting framework. I ultimately wanted to end up with a graph like the following: Swift Charts …">
+<meta property="og:url" content="/2023/01/20/swift-charts-calendar-weekdays/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="/assets/pendulum-weekday-chart.jpeg">
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          Swift Charts & Calendar Weekdays
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/20/swift-charts-calendar-weekdays/" class="post-date">20 January 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>I've recently been working on adding a statistics section to <a href="/pendulum/">Pendulum</a>, the pen pal tracking app I develop with my friend <a href="https://418teapot.net">Alex</a>. This seemed like the perfect opportunity to use <a href="https://developer.apple.com/documentation/charts">Swift Charts</a>, Apple's new charting framework.</p>
+<p>I ultimately wanted to end up with a graph like the following:</p>
+<p><a href="/assets/pendulum-weekday-chart.jpeg"><img alt="Bar chart showing the number of letters written and sent per day of the week" src="/assets/pendulum-weekday-chart.jpeg"></a></p>
+<p>Swift Charts can perfectly handle multiple datasets on one graph, but the problem I ran into was that it doesn't seem to have a way to natively aggregate data per <em>day of the week</em>. If I only had seven days worth of data, it would be fine—I could display just the day name on the axis, and no days would be repeated because I wouldn't be displaying more than a week of data. However, as I want to aggregate every event, this wasn't going to work. I decided to do the grouping of the data myself, and just pass Swift Charts a pre-binned dataset for it to present, where it wouldn't have to worry about dates at all.</p>
+<p>I had one other problem I wanted to solve: I wanted the graph to start on whatever the current locale thinks the start of the week is<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. For us in the UK and Europe, we generally consider Monday the beginning of the week, as reflected in the graph above. But for the US, it should probably start with Sunday.</p>
+<p>In order to generate the seven "bins" for the chart to show, I could use the handy <code>Calendar.current.shortWeekdaySymbols</code> property, which produces an array of the shortened names of the week, properly localised to the user's current locale. However, regardless of locale, this array always starts with Sunday and ends with Saturday. There's another property of the calendar, <code>.firstWeekday</code>, that returns a number between 1 (for Sunday) and 7 (for Saturday) representing what the locale considers to be the first day of the week. Using this, I can shift the array from <code>shortWeekdaySymbols</code> to produce the output in the right order. I decided to wrap both these pieces of information up in an enum to represent each day of the week:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="nc">Weekday</span><span class="p">:</span> <span class="nb">Int</span><span class="p">,</span> <span class="n">CaseIterable</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">sun</span> <span class="p">=</span> <span class="mi">1</span>
+    <span class="k">case</span> <span class="n">mon</span> <span class="p">=</span> <span class="mi">2</span>
+    <span class="k">case</span> <span class="n">tue</span> <span class="p">=</span> <span class="mi">3</span>
+    <span class="k">case</span> <span class="n">wed</span> <span class="p">=</span> <span class="mi">4</span>
+    <span class="k">case</span> <span class="n">thu</span> <span class="p">=</span> <span class="mi">5</span>
+    <span class="k">case</span> <span class="n">fri</span> <span class="p">=</span> <span class="mi">6</span>
+    <span class="k">case</span> <span class="n">sat</span> <span class="p">=</span> <span class="mi">7</span>
+
+    <span class="kd">var</span> <span class="nv">shortName</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">shortWeekdaySymbols</span><span class="p">[</span><span class="kc">self</span><span class="p">.</span><span class="n">rawValue</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="kd">var</span> <span class="nv">orderedCases</span><span class="p">:</span> <span class="p">[</span><span class="n">Weekday</span><span class="p">]</span> <span class="p">{</span>
+        <span class="kc">Self</span><span class="p">.</span><span class="n">allCases</span><span class="p">.</span><span class="n">shiftRight</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">firstWeekday</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>You'll also notice I'm using an extension to <code>Array</code> that allows me to shift an array, wrapping the values around to the end as they get popped off the front:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">shiftRight</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="p">[</span><span class="n">Element</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="bp">count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">self</span> <span class="p">}</span>
+        <span class="kd">var</span> <span class="nv">amount</span> <span class="p">=</span> <span class="n">by</span>
+        <span class="bp">assert</span><span class="p">(</span><span class="o">-</span><span class="bp">count</span><span class="p">...</span><span class="bp">count</span> <span class="o">~=</span> <span class="n">amount</span><span class="p">,</span> <span class="s">&quot;Shift amount out of bounds&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="p">{</span> <span class="n">amount</span> <span class="o">+=</span> <span class="bp">count</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">Array</span><span class="p">(</span><span class="kc">self</span><span class="p">[</span><span class="n">amount</span> <span class="p">..</span><span class="o">&lt;</span> <span class="bp">count</span><span class="p">]</span> <span class="o">+</span> <span class="kc">self</span><span class="p">[</span><span class="mi">0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="n">amount</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now that I have an enum I can use to represent the days of the week correctly, and order them as defined  by the user's locale, I needed to use this somehow to generate data to pass to the chart. I started off by defining a struct to hold a single datapoint:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">StatusCountByDay</span><span class="p">:</span> <span class="n">Identifiable</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">status</span><span class="p">:</span> <span class="n">EventType</span>
+    <span class="kd">let</span> <span class="nv">day</span><span class="p">:</span> <span class="n">Weekday</span>
+    <span class="kd">let</span> <span class="nv">count</span><span class="p">:</span> <span class="nb">Int</span>
+    <span class="kd">var</span> <span class="nv">id</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span> <span class="s">&quot;</span><span class="si">\(</span><span class="n">day</span><span class="si">)</span><span class="s">-</span><span class="si">\(</span><span class="n">status</span><span class="p">.</span><span class="n">rawValue</span><span class="si">)</span><span class="s">&quot;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Here, <code>EventType</code> is an internal enum used by Pendulum to mark whether the event was a letter being sent, written, received, etc. What makes each data point unique in the chart is the combination of the day of the week, and the event type, so I combine those two together as the <code>id</code> for the struct.</p>
+<p>Next, I needed to fetch the data and group it into buckets:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">days</span><span class="p">:</span> <span class="p">[</span><span class="n">Weekday</span><span class="p">:</span> <span class="p">[</span><span class="n">Event</span><span class="p">]]</span> <span class="p">=</span> <span class="p">[:]</span>
+
+<span class="k">for</span> <span class="n">event</span> <span class="k">in</span> <span class="n">Event</span><span class="p">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">withStatus</span><span class="p">:</span> <span class="p">[.</span><span class="n">written</span><span class="p">,</span> <span class="p">.</span><span class="n">sent</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="o">!</span><span class="n">days</span><span class="p">.</span><span class="n">keys</span><span class="p">.</span><span class="bp">contains</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">days</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+     <span class="p">}</span>
+     <span class="n">days</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">]?.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>I start by defining a dictionary mapping weekdays to an array of events, and then looping over the events I'm interested in and adding them to the corresponding weekday key in the dictionary. This necessitated another extension to a <code>Foundation</code> object, this time on <code>Date</code><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">Date</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">dayNumberOfWeek</span><span class="p">:</span> <span class="nb">Int</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">dateComponents</span><span class="p">([.</span><span class="n">weekday</span><span class="p">],</span> <span class="n">from</span><span class="p">:</span> <span class="kc">self</span><span class="p">).</span><span class="n">weekday</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">weekday</span><span class="p">:</span> <span class="n">Weekday</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Weekday</span><span class="p">(</span><span class="n">rawValue</span><span class="p">:</span> <span class="n">dayNumberOfWeek</span> <span class="p">??</span> <span class="mi">0</span><span class="p">)</span> <span class="p">??</span> <span class="p">.</span><span class="n">sun</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This uses the <code>.weekday</code> date component from the user's current calendar, which returns the same 1–7 index as used by <code>.firstWeekday</code>, and returns the corresponding <code>Weekday</code> object.</p>
+<p>With the data correctly bucketed, it was time to sum up the series and create the datapoints for the chart. When the data provided is not sequential (such as a series of dates) but is instead discrete (such as list of names, for example) Swift Charts will draw the bars in the order in which it first encounters them. You may think that weekdays are sequential—and you'd be right—but in this case, they're not an object that Swift Charts understands in that way. So to draw the chart as intended, we need to create a <code>StatusCountByDay</code> instance for each weekday in the order we want. We also need to include one even when the count for that day is zero, because we don't want the chart to just skip a day. I do this by looping over the weekdays ordered according to the locale, inside that looping over each event type, and calculating the sum for each:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">results</span><span class="p">:</span> <span class="p">[</span><span class="n">StatusCountByDay</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">eventType</span> <span class="k">in</span> <span class="p">[</span><span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">]</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">day</span> <span class="k">in</span> <span class="n">Weekday</span><span class="p">.</span><span class="n">orderedCases</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nv">count</span> <span class="p">=</span> <span class="p">(</span><span class="n">days</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="p">??</span> <span class="p">[]).</span><span class="bp">filter</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">type</span> <span class="p">==</span> <span class="n">eventType</span> <span class="p">}.</span><span class="bp">count</span>
+        <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="n">eventType</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="bp">count</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Ultimately, we end up with a series of data like the following:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sun</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">mon</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">tue</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">wed</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">thu</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">12</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">fri</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sat</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sun</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">mon</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">tue</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">wed</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">thu</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">fri</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sat</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>All that's left is to pass that to Swift Charts, for which I'll break down each section after I show the code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Chart</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="p">{</span> <span class="n">data</span> <span class="k">in</span>
+    <span class="n">BarMark</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;Day&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">day</span><span class="p">.</span><span class="n">shortName</span><span class="p">),</span>
+        <span class="n">y</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;Count&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="n">annotation</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">.</span><span class="bp">count</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;</span><span class="si">\(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">footnote</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">color</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">opacity</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">foregroundStyle</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;event&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">position</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;event&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">chartForegroundStyleScale</span><span class="p">([</span>
+    <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">:</span> <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">.</span><span class="n">color</span><span class="p">,</span>
+    <span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">:</span> <span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">.</span><span class="n">color</span><span class="p">,</span>
+<span class="p">])</span>
+</code></pre></div>
+
+<p>Firstly, we want a bar chart, so the correct type of mark to use is a <code>BarMark</code>. The <code>x</code> axis is the short name of the weekday ("Mon", "Tue", etc), and the <code>y</code> axis is the count.</p>
+<p>The <code>.annotation</code> section puts the little figures above each bar, and isn't particularly necessary but I liked the way it looked.</p>
+<p>The two <code>BarMark</code> modifiers <code>.foregroundStyle(by:)</code> and <code>.position(by:)</code> both tell Swift Charts how to define and handle each series independently; otherwise, they'd be a single bar, stacked on top of each other within each day. Grouping them by event type, the first modifier tells them to be different colours, and the second puts them as independent bars side by side instead of on top of each other. I use <code>data.status.actionableTextShort</code> as the value to distinguish the data by, because that is what I want shown in the legend beneath the chart ("Sent" vs "Written", etc).</p>
+<p>You can see below the results of the chart without the <code>.position(by:)</code> modifier, and without the <code>.foregroundStyle(by:)</code> modifier, respectively.</p>
+<p><img alt="The chart without each modifier" src="/assets/pendulum-chart-modifiers.png"></p>
+<p>Finally, the <code>.chartForegroundStyleScale</code> modifier defines the colours to be used for each series, which is a dictionary mapping the name of the series to its colour. In this case, I use want them using the colour defined for the event type, to keep it consistent with the rest of the app.</p>
+<hr>
+<p>I'm quite impressed with Swift Charts and how easy it makes drawing a good looking chart, but there are definitely some things that could be more obvious about it. The lack of decent documentation <em>with plenty of examples and screenshots</em> being a very clear area for improvement!</p>
+<hr>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Yes, I realise none of the rest of the app is localised. Baby steps, though!&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>As you may have realised by now, I'm quite a fan of writing extensions to standard types for common functions that could end up being performed regularly. They make the rest of the code a lot cleaner. It's one of my favourite features of Swift.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

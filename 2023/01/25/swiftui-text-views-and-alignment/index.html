@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>SwiftUI Text Views and Alignment • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="SwiftUI Text Views and Alignment">
+<meta property="og:description" content="There's no doubting that SwiftUI makes app development fast and easy—I certainly wouldn't have two apps on the store by now without it—but it's not without its sharp edges and unexpected behaviours. One of these that I ran into pretty early on is how Text views behave, particularly …">
+<meta property="og:url" content="/2023/01/25/swiftui-text-views-and-alignment/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="/assets/swiftui-text/multiple-plus-borders.png">
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          SwiftUI Text Views and Alignment
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/25/swiftui-text-views-and-alignment/" class="post-date">25 January 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>There's no doubting that SwiftUI makes app development fast and easy—I certainly wouldn't have two apps on the store by now without it—but it's not without its sharp edges and unexpected behaviours.</p>
+<p>One of these that I ran into pretty early on is how <code>Text</code> views behave, particularly with regard to alignment and how it lays itself out when text spills over more than one line. </p>
+<h2>Simple <code>Text</code> views</h2>
+<p>Putting a bare <code>Text</code> view on the screen, and it'll be centered by default:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single.png"></p>
+<p>Putting a border around the <code>Text</code> view shows us what the boundaries of the view's frame are, and they hug the text as tightly as possible. The <code>Text</code>'s frame doesn't expand to fill all the available space; only what is necessary.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-border.png"></p>
+<p>If the text flows onto multiple lines, it will be left-aligned, and expand to fill the width available before wrapping the text:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-full-plus-border.png"></p>
+<p>In this particular case, the frame has expanded to fill the entire width of the screen—but this is only because the second line happens to fit exactly. The frame still <strong>wants</strong> to be centered, as you can see by adjusting the paragraph slightly:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-almost-full-plus-border.png"></p>
+<p>This is often <strong>not</strong> the behaviour we want from our views! If we had multiple paragraphs, or different sections as part of a stack, they wouldn't necessarily be aligned with each other, and it's entirely dependent on exactly what words are in each and where the line breaks fall.</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, sed do abore dolore magna aliqua.&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/multiple.png"></p>
+<p>With the borders on, you can clearly see what's going on:</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, sed do abore dolore magna aliqua.&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/multiple-plus-borders.png"></p>
+<h2>A real world example</h2>
+<p>Let's use a less contrived example: a settings page, with multiple different settings each with explanatory text. For lack of imagination, I've borrowed the settings and text from <a href="http://david-smith.org/">_DavidSmith</a>'s Pedometer++ app (inspired by a <a href="https://david-smith.org/blog/2023/01/20/design-notes-17/">recent post</a> in his excellent <a href="https://david-smith.org/dnd/">Design Notes Diary</a> series).</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">HStack</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">HStack</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/settings-page.png"></p>
+<p>In order to left-align the settings headers, I've wrapped them in an <code>HStack</code> and followed them by a <code>Spacer</code>. There is a better way that we'll come to later, but for now you can clearly see that the two explanatory paragraphs don't align with each other, or with their surrounding content!</p>
+<p>Adding borders in, it's obvious why:</p>
+<p><img alt="" src="/assets/swiftui-text/settings-page-plus-borders.png"></p>
+<h2>Fixing the alignment problems</h2>
+<p>We <em>could</em> fix this in the same way that we pushed the titles to the left - but a better way would be to use the <code>frame</code> modifier on the <code>Text</code> views to tell them to expand to take all available space horizontally, rather than just what they require. This is a technique we can also use on the headings.</p>
+<p>We can do this by using <code>.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)</code>, telling SwiftUI that we want the frame to fill the entire width of its container, and align the text inside it to the left. In the code below, I've added it to four places: the two headers, and the two paragraphs.</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/final.png"></p>
+<p>Once again, putting the borders back in, it's clear what's now going on:</p>
+<p><img alt="" src="/assets/swiftui-text/final-plus-borders.png"></p>
+<hr>
+<blockquote>
+<p>A brief note about the way <code>alignment:</code> works within the <code>frame</code> modifier: it is not for aligning the text, it is for aligning <strong>the view within the frame</strong>. When we say <code>.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)</code>, despite what it looks like, we're not actually asking SwiftUI to change the size of the <code>Text</code> view—instead, we're asking SwiftUI to place that view within a frame that takes up the specified space, and place it at the left of the space. If we put a border around the <code>Text</code> view <strong>before</strong> the frame modifier (green), and another <strong>after</strong> (red), we can see what SwiftUI is doing under the hood:</p>
+<p>```swift
+Text("Allow Rest Days")
+    .font(.headline)
+    .border(.green)
+    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+    .border(.red)
+Text("When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.")
+    .border(.green)
+    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+    .border(.red)</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">!</span><span class="p">[](</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">swiftui</span><span class="o">-</span><span class="n">text</span><span class="o">/</span><span class="n">frame</span><span class="o">-</span><span class="n">border</span><span class="o">.</span><span class="n">png</span><span class="p">)</span>
+
+<span class="o">---</span>
+
+<span class="c1">## A neat solution</span>
+
+<span class="n">In</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">such</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">common</span><span class="w"> </span><span class="n">thing</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="n">want</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="err">`</span><span class="n">Text</span><span class="err">`</span><span class="w"> </span><span class="n">views</span><span class="w"> </span><span class="n">within</span><span class="w"> </span><span class="n">my</span><span class="w"> </span><span class="n">apps</span><span class="p">,</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">I</span><span class="s1">&#39;ve written a small view modifier to handle it. Typing `.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)` in so many places is a pain in the backside.</span>
+
+<span class="err">```</span><span class="n">swift</span>
+<span class="n">struct</span><span class="w"> </span><span class="n">FullWidthText</span><span class="p">:</span><span class="w"> </span><span class="n">ViewModifier</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">TextAlignment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span>
+
+<span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">frameAlignment</span><span class="p">:</span><span class="w"> </span><span class="n">Alignment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">switch</span><span class="w"> </span><span class="n">alignment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">trailing</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">trailing</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">center</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">center</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">body</span><span class="p">(</span><span class="n">content</span><span class="p">:</span><span class="w"> </span><span class="n">Content</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">some</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">content</span>
+<span class="w">            </span><span class="o">.</span><span class="n">multilineTextAlignment</span><span class="p">(</span><span class="n">alignment</span><span class="p">)</span>
+<span class="w">            </span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">maxWidth</span><span class="p">:</span><span class="w"> </span><span class="o">.</span><span class="n">infinity</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">frameAlignment</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">extension</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">fullWidth</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">TextAlignment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">some</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">modifier</span><span class="p">(</span><span class="n">FullWidthText</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">alignment</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now we can clean up our previous code, producing the same result but with a much neater and easier to remember view modifier:</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">wheelchairMode</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p>As you may have noticed, it also supports providing the other <code>TextAlignment</code> options for multiline text, passed to the <code>.fullWidth(alignment:)</code> videw modifier: <code>.leading</code> (the default), <code>.centered</code>, and <code>.trailing</code>.</p>
+<p>Hopefully this can be of some use to you and help clear up some of the oddities surrounding the layout of text in SwiftUI! If you do find it helpful, I'd love for you to <a href="https://snailedit.social/@benbacardi">let me know</a>.</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

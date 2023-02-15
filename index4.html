@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Ben Cardy • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post ">
+
+    <h1>
+        <a href="https://www.wired.com/story/bgp-route-leak-internet-outage/">The Infrastructure Mess Causing Countless Internet Outages</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2019/06/29/the-infrastructure-mess-causing-countless-internet-outages/" class="post-date">29 June 2019</a>
+• <a href="/categories/#networking">Networking</a>        •
+          <a href="/tags/#bgp">BGP</a>
+    </small>
+
+    <p>Roland Dobbins from Netscout Arbor, quoted in this <em>Wired</em> article:</p>
+<blockquote>
+<p>"Nonspecialists kind of view the internet as this high-tech, gleaming thing like the bridge of the starship Enterprise. It’s not like that at all. It’s more like an 18th-century Royal Navy frigate. There’s a lot of running around and screaming and shouting and pulling on ropes to try to get things going in the right direction."</p>
+</blockquote>
+<p>It's amazing how fragile some of the technologies that power something the world takes for granted are; BGP is a great example of that. The Internet is everywhere, and it's becoming increasingly more necessary to be connected in order to be able to just go about our lives.</p>
+<p>Regarding the choice of headline, however, I don't think the word "mess" is fair. That does a disservice to the hundreds of very talented people that design, implement, and maintain the infrastructre that underpins our connected world. </p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://www.google.com">Junos: Confirm a commit cleanly"</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2018/07/27/junos-confirm-a-commit-cleanly/" class="post-date">27 July 2018</a>
+• <a href="/categories/#networking">Networking</a>        •
+          <a href="/tags/#junos">Junos</a>
+    </small>
+
+    <p>For years, I have loved the fact that Junos allows you to perform a <code>commit confirmed</code> to apply the configuration with an automatic rollback in a certain number of minutes.</p>
+<p>I have always believed that the only way to confirm the commit (i.e. stop the automatic rollback) was to <code>commit</code> again. This creates two commits in the commit history, one containing the actual config diff, and an empty one purely used to stop the rollback. I've always thought that this creates a somewhat messy commit history, and confuses the use of <code>show | compare rollback</code>:</p>
+<p>{% highlight bash %}
+[edit]
+ben@device&gt; run show system commit
+0   2018-07-27 08:44:26 BST by ben via cli
+1   2018-07-27 08:44:07 BST by ben via cli commit confirmed, rollback in 5mins
+2   2018-07-23 10:04:29 BST by ben via cli
+3   2018-07-23 10:03:58 BST by ben via cli commit confirmed, rollback in 2mins</p>
+<p>[edit]
+ben@device&gt; show | compare rollback 1</p>
+<p>[edit]
+ben@device&gt; # Huh, it's empty?! I'm sure I did some work...</p>
+<p>[edit]
+ben@device&gt; show | compare rollback 2
+[edit system]
+-   host-name old-device
++   host-name device</p>
+<p _="%" endhighlight>[edit]
+ben@device&gt; # Oh, there it is...</p>
+<p>However, today I learnt that a <code>commit check</code> is enough to stop the rollback, and doesn't create an empty commit! My commit histories are now much cleaner, and <code>show | compare rollback</code> commands a lot easier to work out what you're actually looking at.</p>
+<p>{% highlight bash %}
+[edit]
+ben@device&gt; run show system commit
+1   2018-07-27 08:44:07 BST by ben via cli commit confirmed, rollback in 5mins
+3   2018-07-23 10:03:58 BST by ben via cli commit confirmed, rollback in 2mins</p>
+<p _="%" endhighlight>[edit]
+ben@device&gt; show | compare rollback 1
+[edit system]
+-   host-name old-device
++   host-name device</p>
+<p>Much better!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2018/07/22/lessons-learnt-from-an-outage/">Lessons Learnt from an Outage</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2018/07/22/lessons-learnt-from-an-outage/" class="post-date">22 July 2018</a>
+• <a href="/categories/#networking">Networking</a>    </small>
+
+    <p>I caused an outage last week. </p>
+<p>Not intentionally, and not a large outage by any stretch of the imagination. But it had various knock-on consequences that led to a lengthy application recovery time, long after full network connectivity was restored.</p>
+<p>We were replacing one of the two core MPLS routers at one of the three primary sites in our network. Upgrading the hardware to a newer model required costing the existing node out, powering it off, physically replacing it with the new hardware, and bringing the node back online.</p>
+<p>(For those of you interested in the details, we were upgrading a Juniper MX480 to an MX10003 - all logical connectivity was staying the same, but some links were being upgraded from 10Gbps to either 40 or 100).</p>
+<p>In preparation for the upgrade, I had taken the running config from the existing node, adapted what was necessary for the newer hardware (mainly interface name changes, etc) and preloaded it onto the new node waiting in the lab. So far so good.</p>
+<p>Unfortunately, the running config at the time I took it from the live node, was exactly that - the <em>live</em> node. At that moment, it wasn't in its costed-out state, meaning that the minute we started repatching links into the new hardware, they were coming back live.</p>
+<p>These core node provide connectivity between our three primary sites, and their three data centres. As the links came up live, the new node started drawing traffic from the local data centre fabric before it had any connectivity to the other sites (or even the other node in the same site). This meant that for a period of around four minutes, between one sixth and one half of all egress traffic from the local data centre was being blackholed, and dropped.</p>
+<p>This caused connectivity issues between our ceph clusters, which then struggled to make sense of the situation, and filled up the only remaining link between this site and the others with traffic. (I don't know the full details of why it did this, or what that traffic was - I'm a network engineer, and not responsible for the rest of the infrastructure. But remember I said we were upgrading from 10 to 100Gbps on some links? This is partly why). This then exacerbated the connectivity problems (for other applications in addition to ceph), pinning the links at line rate long after the we had costed out the new node as originally intended, leading to the long recovery time for the application layer.</p>
+<p>So what did I learn from this outage? That's the most important question when something like this happens - particularly if it was your fault. This is what I learnt.</p>
+<h3>Don't become complacent</h3>
+<p>We had done this exact procedure for the other node in this site just days before, and all had gone smoothly (I had remembered to cost out the new node as I was preparing its config, instead of running with the live config from the existing node). Even if you've done an identical change before, <em>always</em> triple check what you're doing if it has the potential to cause an impact on other parts of the business. Ideally, ask a colleague if they can spot anything you may have forgotten.</p>
+<h3>Unconditional summarisation isn't always a good thing</h3>
+<p>Even though the links weren't costed out, if all the core did was pass on routes learnt from the other sites, then the new node wouldn't have started drawing traffic until it was able to route it.§</p>
+<p>Instead, our core currently advertises three aggregate routes to its clients - the three private <a href="https://tools.ietf.org/html/rfc1918">RFC1918</a> ranges. These aggregates are active if just a single contributing route is present in the routing table. In our case, the core node's loopback is a perfectly valid contributing route to the 10.0.0.0/8 aggregate, causing it to be advertised even if every other link on the box was down, drawing (and dropping) traffic.</p>
+<p>Under normal circumstances, we'd obviously expect the core nodes to have full reachability to the rest of the core, and this wouldn't be an issue. However, certain failure scenarios can cause a node to become isolated (not just configuration mistakes like this one!) and blackhole traffic. Advertising more specific routes actually learnt from other peers, or some conditions imposed on the generation of the aggregate routes, would help limit this.</p>
+<h3>Be selective about the order links are repatched</h3>
+<p>Core-facing links first! The outage was caused by the fact that the links to the data centre fabric were connected before the core-facing links. If they had been done the other way around, and core connectivity as part of the MPLS domain was confirmed before connecting any client-facing links, the issue would have been avoided.</p>
+<p>Core-facing links are more important than client-facing - most clients will have redundancy via other nodes, and even if they don't, until your core node has reachability to the rest of the core, it's useless to its clients anyway.</p>
+<h3>Don't neglect CoS</h3>
+<p>While not directly related to the outage itself, ceph filling the links with non-essential traffic (compared to, say, production web or database traffic) led to outages on other applications that could no longer communicate. Some quality of service markings and traffic shaping or policing would have a gone a long way to mitigating the impact, by restricting non-business-critical traffic to a subset of the link. Less important (but still useful) on the upgraded 100Gbps connections; but our single 10Gbps like couldn't cope.</p>
+
+  </div>
+<div class="pagination mb-5 d-flex justify-content-between">
+
+    <span class="text-muted">← Older</span>
+
+
+    <a href="/index3.html">Newer →</a>
+
+</div>
+
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

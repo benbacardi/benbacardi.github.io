@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Python and the Magical OAuth Token • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Python and the Magical OAuth Token">
+<meta property="og:description" content="A recent post by Colin demonstrated a utility class they'd written to handle fetching and refreshing OAuth bearer tokens for APIs and services that are secured that way, to stop you having to worry about it in the majority of your code. For years, I've used a similar class at …">
+<meta property="og:url" content="/2022/04/25/python-and-the-magical-oauth-token/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          Python and the Magical OAuth Token
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/04/25/python-and-the-magical-oauth-token/" class="post-date">25 April 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#python">Python</a>
+    </small>
+
+    <p>A <a href="https://colinsent.me/The-Magical-Self-Rotating-Self-Getting-OAuth-Token-aa8e8a840e9643fd9f4ca8f9e97e53e9">recent post by Colin</a> demonstrated a utility class they'd written to handle fetching and refreshing OAuth bearer tokens for APIs and services that are secured that way, to stop you having to worry about it in the majority of your code. For years, I've used a similar class at work that I wrote to simplify this, and Colin's post prompted me to share it here too.</p>
+<p>The main difference from Colin's solution is that the class I use is a subclass of the <a href="https://docs.python-requests.org/en/latest/">Requests</a> <code>Session</code> object, rather than a stand-alone object. It handles not only fetching and refreshing the bearer token where necessary, but also inserting the correct headers to the requests you make. Here's the entire class (and a couple of helper exception classes):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">class</span> <span class="nc">OAuthResponseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">OAuthInvalidGrant</span><span class="p">(</span><span class="n">OAuthResponseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">OAuthInvalidScope</span><span class="p">(</span><span class="n">OAuthResponseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">TokenRefreshSession</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">):</span>
+
+    <span class="n">ERROR_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;invalid_grant&quot;</span><span class="p">:</span> <span class="n">OAuthInvalidGrant</span><span class="p">,</span>
+        <span class="s2">&quot;invalid_scope&quot;</span><span class="p">:</span> <span class="n">OAuthInvalidScope</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">token_url</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oauth_client_id</span> <span class="o">=</span> <span class="n">client_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oauth_client_secret</span> <span class="o">=</span> <span class="n">client_secret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oauth_scope</span> <span class="o">=</span> <span class="n">scope</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oauth_token_url</span> <span class="o">=</span> <span class="n">token_url</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prepare_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Add the access token to the headers&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">oauth_access_token</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">oauth_access_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return a valid Access Token. Renews the token if it has expired&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_access_token_valid</span><span class="p">():</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_client_id</span><span class="p">,</span>
+                <span class="s2">&quot;client_secret&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_client_secret</span><span class="p">,</span>
+                <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;client_credentials&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth_scope</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">oauth_token_url</span><span class="p">,</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+            <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s2">&quot;error&quot;</span> <span class="ow">in</span> <span class="n">response_data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">],</span>
+                    <span class="n">OAuthResponseError</span><span class="p">)(</span><span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;error_description&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_oauth_access_token</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_oauth_access_token_expiry</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">response_data</span><span class="p">[</span><span class="s2">&quot;expires_in&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oauth_access_token</span>
+
+    <span class="k">def</span> <span class="nf">oauth_access_token_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Check the validity of the current access token&#39;&#39;&#39;</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">fudged_time</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">access_token</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_oauth_access_token&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">access_token_expiry</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_oauth_access_token_expiry&quot;</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="n">access_token_expiry</span> <span class="o">&lt;=</span> <span class="n">fudged_time</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+
+<p>The code is relatively simple. As a subclass of <code>requests.Session</code>, it accepts all the usual arguments, but also requires the OAuth client ID, client secret, scope, and token endpoint. This could be hardcoded, or a default provided in the class definition as we do internally, to avoid having to specify it each time.</p>
+<p>The <code>prepare_request</code> method is part of the <code>requests.Session</code> mechanism for generating the HTTP call when the library is used. The overriden method in the <code>TokenRefreshSession</code> object inserts the correct <code>Authorization: Bearer</code> header and token into the request on behalf of the user.</p>
+<p>As with Colin's solution, the <code>oauth_access_token</code> property is computed when accessed, and performs the necessary update or refresh should the currently stored token have expired, by posting the client credentials data to the token endpoint provided.</p>
+<p>Here's an example of the class in action:</p>
+<div class="highlight"><pre><span></span><code><span class="n">session</span> <span class="o">=</span> <span class="n">TokenRefreshSession</span><span class="p">(</span>
+    <span class="n">client_id</span><span class="o">=</span><span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="n">client_secret</span><span class="o">=</span><span class="s2">&quot;shh&quot;</span><span class="p">,</span>
+    <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">,</span> <span class="s2">&quot;etc&quot;</span><span class="p">],</span>
+    <span class="n">token_url</span><span class="o">=</span><span class="s2">&quot;https://api.my-great-app.com/v1.0/auth&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://api.my-great-app.com/v1.0/users/23&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The first API call will fetch the token and store it, and subsequent calls (using the same session object) will either use the stored token or fetch a new one as necessary. You never need worry about including the <code>Bearer</code> header yourself. And, to quote Colin's post:</p>
+<blockquote>
+<p>Your token will magically manage itself, leaving you free to write good code against your favorite API.</p>
+</blockquote>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

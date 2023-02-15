@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Junos commit history: who did what? • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Junos commit history: who did what?">
+<meta property="og:description" content="Junos has always had one fantastic advantage over Cisco's IOS: the ability to stage a pending commit, and see a history of changes, rather than each command immediately being executed on the running config a soon as you hit Enter. The show | compare rollback X command has always been able …">
+<meta property="og:url" content="/2019/11/16/junos-commit-history-who-did-what/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+        <a href="https://www.juniper.net/documentation/en_US/junos/topics/reference/command-summary/show-system-rollback.html">Junos commit history: who did what?</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2019/11/16/junos-commit-history-who-did-what/" class="post-date">16 November 2019</a>
+• <a href="/categories/#networking">Networking</a>        •
+          <a href="/tags/#junos">Junos</a>
+    </small>
+
+    <p>Junos has always had one fantastic advantage over Cisco's IOS: the ability to stage a pending commit, and see a history of changes, rather than each command immediately being executed on the running config a soon as you hit Enter. </p>
+<p>The <code>show | compare rollback X</code> command has always been able to show you the difference between your current config and what the config was like <em>X</em> commits ago. However, I've always found it difficult to figure out what exactly was done in a single commit (or batch of commits) if they weren't the most recent. That is, until I learnt of this command: <code>show system rollback compare X Y</code>! This lets you see the changes that were introduced just between the <em>X</em> and <em>Y</em> commits. </p>
+<p>Here's a real life example. Below is the commit history for a device at work. You can see there were a number of batches of commits going back in time where different individuals have done sole changes on the device:</p>
+<div class="highlight"><pre><span></span><code>ben@switch&gt;<span class="w"> </span>show<span class="w"> </span>system<span class="w"> </span>commit
+<span class="m">0</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">15</span>:06:51<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">1</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">14</span>:49:19<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">2</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">14</span>:43:01<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">3</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">14</span>:42:11<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">4</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">14</span>:41:01<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">5</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">14</span>:03:53<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">6</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">12</span>:28:33<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">7</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">12</span>:25:44<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">8</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">12</span>:24:53<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">9</span><span class="w">   </span><span class="m">2019</span>-11-13<span class="w"> </span><span class="m">12</span>:23:28<span class="w"> </span>GMT<span class="w"> </span>by<span class="w"> </span>katerina<span class="w"> </span>via<span class="w"> </span>cli
+…<span class="w"> </span>output<span class="w"> </span>truncated<span class="w"> </span>…<span class="w"> </span>
+<span class="m">20</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:16:43<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">21</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:15:27<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">22</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:13:48<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">23</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:13:06<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">24</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:08:43<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">25</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:08:13<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">26</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:06:50<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">27</span><span class="w">  </span><span class="m">2019</span>-09-13<span class="w"> </span><span class="m">14</span>:06:12<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>ben<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">28</span><span class="w">  </span><span class="m">2019</span>-08-07<span class="w"> </span><span class="m">14</span>:21:33<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>stuart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">29</span><span class="w">  </span><span class="m">2019</span>-08-07<span class="w"> </span><span class="m">14</span>:21:08<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>stuart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">30</span><span class="w">  </span><span class="m">2019</span>-08-07<span class="w"> </span><span class="m">14</span>:18:43<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>stuart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">31</span><span class="w">  </span><span class="m">2019</span>-08-05<span class="w"> </span><span class="m">09</span>:06:28<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>stuart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">32</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">13</span>:04:54<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">33</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">13</span>:02:34<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">34</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">13</span>:01:31<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli<span class="w"> </span>commit<span class="w"> </span>confirmed,<span class="w"> </span>rollback<span class="w"> </span><span class="k">in</span><span class="w"> </span>3mins
+<span class="m">35</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">12</span>:59:30<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">36</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">12</span>:58:39<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">37</span><span class="w">  </span><span class="m">2019</span>-06-19<span class="w"> </span><span class="m">12</span>:58:03<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>lewis<span class="w"> </span>via<span class="w"> </span>cli<span class="w"> </span>commit<span class="w"> </span>confirmed,<span class="w"> </span>rollback<span class="w"> </span><span class="k">in</span><span class="w"> </span>3mins
+<span class="m">38</span><span class="w">  </span><span class="m">2019</span>-06-07<span class="w"> </span><span class="m">13</span>:58:39<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>bart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">39</span><span class="w">  </span><span class="m">2019</span>-06-07<span class="w"> </span><span class="m">13</span>:07:17<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>bart<span class="w"> </span>via<span class="w"> </span>cli<span class="w"> </span>commit<span class="w"> </span>confirmed,<span class="w"> </span>rollback<span class="w"> </span><span class="k">in</span><span class="w"> </span>1mins
+<span class="m">40</span><span class="w">  </span><span class="m">2019</span>-06-06<span class="w"> </span><span class="m">12</span>:27:51<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>bart<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">41</span><span class="w">  </span><span class="m">2019</span>-05-15<span class="w"> </span><span class="m">13</span>:07:07<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>chris<span class="w"> </span>via<span class="w"> </span>cli
+<span class="m">42</span><span class="w">  </span><span class="m">2019</span>-05-09<span class="w"> </span><span class="m">14</span>:14:43<span class="w"> </span>BST<span class="w"> </span>by<span class="w"> </span>chris<span class="w"> </span>via<span class="w"> </span>cli
+</code></pre></div>
+
+<p>I needed to find what Stuart and Lewis had each introduced in their batches of changes back in August and June, respectively. This new command makes that trivially easy. </p>
+<p>Stuart's batches of changes were in commits 28–31. Running the following command, I was able to easily extract just what those commits introduced:</p>
+<div class="highlight"><pre><span></span><code>ben@switch&gt;<span class="w"> </span>show<span class="w"> </span>system<span class="w"> </span>rollback<span class="w"> </span>compare<span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="m">28</span>
+<span class="o">[</span>edit<span class="w"> </span>interfaces<span class="w"> </span>interface-range<span class="w"> </span>ir_stp_edge<span class="o">]</span>
+<span class="w">     </span>member<span class="w"> </span>ge-0/0/10<span class="w"> </span><span class="o">{</span><span class="w"> </span>...<span class="w"> </span><span class="o">}</span>
++<span class="w">    </span>member<span class="w"> </span>ge-0/0/6<span class="p">;</span>
++<span class="w">    </span>member<span class="w"> </span>ge-0/0/7<span class="p">;</span>
++<span class="w">    </span>member<span class="w"> </span>ge-0/0/8<span class="p">;</span>
+…<span class="w"> </span>more<span class="w"> </span>changes<span class="w"> </span>…
+</code></pre></div>
+
+<p>Note that you need to put the higher (older) commit number first, followed by the lower (more recent). Additionally, you need to increase the higher commits number by one, as you want to know what was introduced between those commits, <em>including the oldest one</em>. </p>
+<p>Likewise, to see what Lewis introduced in his commits, we can run the following:</p>
+<div class="highlight"><pre><span></span><code>ben@switch&gt;<span class="w"> </span>show<span class="w"> </span>system<span class="w"> </span>rollback<span class="w"> </span>compare<span class="w"> </span><span class="m">38</span><span class="w"> </span><span class="m">32</span>
+…<span class="w"> </span>some<span class="w"> </span>changes<span class="w"> </span>...
+</code></pre></div>
+
+<p>This will definitely save me some time in future!</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

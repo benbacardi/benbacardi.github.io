@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Ben Cardy • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post ">
+
+    <h1>
+          <a href="/2023/02/02/swiftui-equal-width-icons/">SwiftUI: Equal Width Icons</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/02/02/swiftui-equal-width-icons/" class="post-date">2 February 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>Following on from my previous post on <a href="/2023/01/25/swiftui-text-views-and-alignment/">SwiftUI Text alignment</a>, I thought I'd post about another common issue I run into and how to solve it relatively simply: equal width icons. This logic applies to any series of Views you want to display equally in either height or width, but the most common place it occurs in my own code is when using SF Symbols. Each symbol has its own width, so when using them as bullets or in other situations where you want them to line up it can be infuriating.</p>
+<p>Let's set the stage with some code. The example I'm using is the ubiquitous "What's New" sheet, found in many of Apple's own apps. I've borrowed the text and icons from the latest update to <a href="https://www.penedex.com/">Penedex</a>, a pen-tracking app developed by Connor Rose. Here's the sample View:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">EqualWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">yellow</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">blue</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Brand List Fix&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>A series of repeated sections (don't worry, it'll be much neater by the end of the post), each with an icon, a title and a short summary. It makes use of the <code>fullWidth()</code> modifier from my <a href="/2023/01/25/swiftui-text-views-and-alignment/">previous post</a>. This is how iOS renders it:</p>
+<p><img alt="" src="/assets/swiftui-equal/initial.png"></p>
+<p>As a starter for ten, this is pretty good! But the scroll icon is wider than the previous two, and the ladybird icon even wider still. This pushes the text out to the right and it no longer lines up. We could manually define a width for the icon:</p>
+<div class="highlight"><pre><span></span><code><span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>(From now on, I'm only going to show the code for one of the four sections. The others are identical in all but the content.)</p>
+<p>Yay, that works!</p>
+<p><img alt="" src="/assets/swiftui-equal/manual-width.png"></p>
+<p>But it's a bit of a "magic number", and one that would likely need to be tweaked should you change the icons at a later date. Not to mention that it just won't scale with the icon if the user adjusts the text size on their iOS device. We can do better than that.</p>
+<p>There's three parts to the solution. We need to:</p>
+<ul>
+<li>read the width of each icon,</li>
+<li>store the maximum of those widths somewhere, and</li>
+<li>set the width of each icon to that maximum.</li>
+</ul>
+<p>Let's take these one at a time.</p>
+<h4>Read the width of each icon</h4>
+<p>This is easily achieved using a <code>GeometryReader</code>. I have a bit of a love/hate relationship with this SwiftUI utility, but in this case it works very well. Appyling it as a background to the icon means it will grow to match the size of the icon's view, and we can read the frame's size:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="c1">// geo.size.width is the width of the icon</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>But what we can do with that value?</p>
+<h4>Store the maximum width</h4>
+<p>In order to calculate the maximum, we need a couple of things. We need a State variable for the max icon width, and let's give it a sensible default:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
+</code></pre></div>
+
+<p>And we need a way to accumulate the values read by each <code>GeometryReader</code> and take the maximum for our <code>iconWidth</code> variable. SwiftUI provides us with just the thing: a <a href="https://developer.apple.com/documentation/swiftui/preferencekey"><code>PreferenceKey</code></a>. This is a strange bit of SwiftUI that allows us to combine a number of values into a single one, and store it somewhere. First, we need to define a custom <code>PreferenceKey</code>, with a <code>reduce</code> function that returns the maximum of the values it is passed. I like to do this on an extension of the main view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kd">extension</span> <span class="nc">EqualWidthIcons</span> <span class="p">{</span>
+    <span class="kd">struct</span> <span class="nc">IconWidthPreferenceKey</span><span class="p">:</span> <span class="n">PreferenceKey</span> <span class="p">{</span>
+        <span class="kd">static</span> <span class="kd">let</span> <span class="nv">defaultValue</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="kd">static</span> <span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="kr">inout</span> <span class="n">CGFloat</span><span class="p">,</span> <span class="n">nextValue</span><span class="p">:</span> <span class="p">()</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">value</span> <span class="p">=</span> <span class="bp">max</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">nextValue</span><span class="p">())</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The code here is a little odd, but the important part is the call to <code>max</code>, setting the <code>value</code> variable to the maximum of either what it was before, or the value it has just been passed (the result of the <code>nextValue()</code> call).</p>
+<p>Now we need to use this <code>PreferenceKey</code> in our <code>GeometryReader</code>. To do so, we have to call <code>.preference(key:value:)</code> on a View. We can place an invisible view in the <code>GeometryReader</code> and use it there:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>Applying this to each icon will propagate the maxiumum size up into our <code>EqualWidthIcons.IconWidthPreferenceKey</code>.</p>
+<h4>Set the width of each icon</h4>
+<p>Now all that's left is to set the width of each icon to that maximum. Remember the State variable we created for it previously? We can watch for changes to the <code>PreferenceKey</code> and update it accordingly. I like to do this on the highest view in the hierarchy, the immediate one returned by <code>body</code> (in this case, that's the outer <code>VStack</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="n">VStack</span> <span class="p">{</span>
+        <span class="c1">// Rest of view...</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onPreferenceChange</span><span class="p">(</span><span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="kc">self</span><span class="p">.</span><span class="n">iconWidth</span> <span class="p">=</span> <span class="n">value</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Finally, update each icon to use this value as its width. It's important that we set the frame <em>after</em> the <code>GeometryReader</code> background.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<p>And voila! Each icon has the same width, and will scale along with dynamic type as specified by the user.</p>
+<p><img alt="" src="/assets/swiftui-equal/fixed.png"></p>
+<h4>Cleaning up</h4>
+<p>This works great, but we have a fair bit of duplicated code. We did already, but since we've added the <code>background</code>, <code>GeometryReader</code>, and <code>frame</code> definitions, the sections have become fairly unwieldy. It's probably time we split it out into its own view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewSection</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+                    <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+                        <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+<span class="c1">//              How do we read the iconWidth here?</span>
+<span class="c1">//              .frame(width: iconWidth)</span>
+            <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This dramatically reduces the size of the original view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">EqualWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">green</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">blue</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Brand List Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">red</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">onPreferenceChange</span><span class="p">(</span><span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+            <span class="kc">self</span><span class="p">.</span><span class="n">iconWidth</span> <span class="p">=</span> <span class="n">value</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>But you may have noticed the question in the comments in the <code>WhatsNewSection</code> code: where do we read <code>iconWidth</code> from now?</p>
+<p>We have to pass it down as a binding from the parent view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewSection</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="p">@</span><span class="n">Binding</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span>
+    <span class="c1">// Rest of view... </span>
+</code></pre></div>
+
+<p>Read it as usual to set the icon's frame:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<p>And finally, pass the binding through from the main view:</p>
+<div class="highlight"><pre><span></span><code><span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">,</span> <span class="n">iconWidth</span><span class="p">:</span> <span class="err">$</span><span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<h3>A better alternative</h3>
+<p>For this particular situation, we can actually do away with the <code>PreferenceKey</code> entirely, if we switch our layout to using a <code>Grid</code>. Grids automatically size the width of their columns based on the widest cell within the column, which is exactly what we want. Here's a verison of the code using <code>Grid</code> instead:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewGridRow</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">GridRow</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+            <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="kd">struct</span> <span class="nc">GridWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">Grid</span><span class="p">(</span><span class="n">horizontalSpacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="n">verticalSpacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">green</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">blue</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Brand List Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">red</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The result is identical, with a little less code a lot less complexity. However, there are still some situations where you want icons or other views to match widths or heights but a grid isn't appropriate—there may be other content between the views, for example, that you don't want conforming to a grid—so the <code>PreferenceKey</code> method is still valuable to know.</p>
+<p>The full code for both solutions can be found <a href="https://gist.github.com/benbacardi/4df235736f03cd4cda5cc32d828a9298">on Github</a>.</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2023/01/25/swiftui-text-views-and-alignment/">SwiftUI Text Views and Alignment</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/25/swiftui-text-views-and-alignment/" class="post-date">25 January 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>There's no doubting that SwiftUI makes app development fast and easy—I certainly wouldn't have two apps on the store by now without it—but it's not without its sharp edges and unexpected behaviours.</p>
+<p>One of these that I ran into pretty early on is how <code>Text</code> views behave, particularly with regard to alignment and how it lays itself out when text spills over more than one line. </p>
+<h2>Simple <code>Text</code> views</h2>
+<p>Putting a bare <code>Text</code> view on the screen, and it'll be centered by default:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single.png"></p>
+<p>Putting a border around the <code>Text</code> view shows us what the boundaries of the view's frame are, and they hug the text as tightly as possible. The <code>Text</code>'s frame doesn't expand to fill all the available space; only what is necessary.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-border.png"></p>
+<p>If the text flows onto multiple lines, it will be left-aligned, and expand to fill the width available before wrapping the text:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-full-plus-border.png"></p>
+<p>In this particular case, the frame has expanded to fill the entire width of the screen—but this is only because the second line happens to fit exactly. The frame still <strong>wants</strong> to be centered, as you can see by adjusting the paragraph slightly:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/single-almost-full-plus-border.png"></p>
+<p>This is often <strong>not</strong> the behaviour we want from our views! If we had multiple paragraphs, or different sections as part of a stack, they wouldn't necessarily be aligned with each other, and it's entirely dependent on exactly what words are in each and where the line breaks fall.</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, sed do abore dolore magna aliqua.&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/multiple.png"></p>
+<p>With the borders on, you can clearly see what's going on:</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do abore et dolore magna aliqua.&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Lorem ipsum dolor sit amet, sed do abore dolore magna aliqua.&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">border</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/multiple-plus-borders.png"></p>
+<h2>A real world example</h2>
+<p>Let's use a less contrived example: a settings page, with multiple different settings each with explanatory text. For lack of imagination, I've borrowed the settings and text from <a href="http://david-smith.org/">_DavidSmith</a>'s Pedometer++ app (inspired by a <a href="https://david-smith.org/blog/2023/01/20/design-notes-17/">recent post</a> in his excellent <a href="https://david-smith.org/dnd/">Design Notes Diary</a> series).</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">HStack</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">HStack</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/settings-page.png"></p>
+<p>In order to left-align the settings headers, I've wrapped them in an <code>HStack</code> and followed them by a <code>Spacer</code>. There is a better way that we'll come to later, but for now you can clearly see that the two explanatory paragraphs don't align with each other, or with their surrounding content!</p>
+<p>Adding borders in, it's obvious why:</p>
+<p><img alt="" src="/assets/swiftui-text/settings-page-plus-borders.png"></p>
+<h2>Fixing the alignment problems</h2>
+<p>We <em>could</em> fix this in the same way that we pushed the titles to the left - but a better way would be to use the <code>frame</code> modifier on the <code>Text</code> views to tell them to expand to take all available space horizontally, rather than just what they require. This is a technique we can also use on the headings.</p>
+<p>We can do this by using <code>.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)</code>, telling SwiftUI that we want the frame to fill the entire width of its container, and align the text inside it to the left. In the code below, I've added it to four places: the two headers, and the two paragraphs.</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">maxWidth</span><span class="p">:</span> <span class="p">.</span><span class="n">infinity</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p><img alt="" src="/assets/swiftui-text/final.png"></p>
+<p>Once again, putting the borders back in, it's clear what's now going on:</p>
+<p><img alt="" src="/assets/swiftui-text/final-plus-borders.png"></p>
+<hr>
+<blockquote>
+<p>A brief note about the way <code>alignment:</code> works within the <code>frame</code> modifier: it is not for aligning the text, it is for aligning <strong>the view within the frame</strong>. When we say <code>.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)</code>, despite what it looks like, we're not actually asking SwiftUI to change the size of the <code>Text</code> view—instead, we're asking SwiftUI to place that view within a frame that takes up the specified space, and place it at the left of the space. If we put a border around the <code>Text</code> view <strong>before</strong> the frame modifier (green), and another <strong>after</strong> (red), we can see what SwiftUI is doing under the hood:</p>
+<p>```swift
+Text("Allow Rest Days")
+    .font(.headline)
+    .border(.green)
+    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+    .border(.red)
+Text("When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.")
+    .border(.green)
+    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+    .border(.red)</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">!</span><span class="p">[](</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">swiftui</span><span class="o">-</span><span class="n">text</span><span class="o">/</span><span class="n">frame</span><span class="o">-</span><span class="n">border</span><span class="o">.</span><span class="n">png</span><span class="p">)</span>
+
+<span class="o">---</span>
+
+<span class="c1">## A neat solution</span>
+
+<span class="n">In</span><span class="w"> </span><span class="n">fact</span><span class="p">,</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">such</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">common</span><span class="w"> </span><span class="n">thing</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="n">want</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="err">`</span><span class="n">Text</span><span class="err">`</span><span class="w"> </span><span class="n">views</span><span class="w"> </span><span class="n">within</span><span class="w"> </span><span class="n">my</span><span class="w"> </span><span class="n">apps</span><span class="p">,</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">I</span><span class="s1">&#39;ve written a small view modifier to handle it. Typing `.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)` in so many places is a pain in the backside.</span>
+
+<span class="err">```</span><span class="n">swift</span>
+<span class="n">struct</span><span class="w"> </span><span class="n">FullWidthText</span><span class="p">:</span><span class="w"> </span><span class="n">ViewModifier</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">TextAlignment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span>
+
+<span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">frameAlignment</span><span class="p">:</span><span class="w"> </span><span class="n">Alignment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">switch</span><span class="w"> </span><span class="n">alignment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">trailing</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">trailing</span>
+<span class="w">        </span><span class="n">case</span><span class="w"> </span><span class="o">.</span><span class="n">center</span><span class="p">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="o">.</span><span class="n">center</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">body</span><span class="p">(</span><span class="n">content</span><span class="p">:</span><span class="w"> </span><span class="n">Content</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">some</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">content</span>
+<span class="w">            </span><span class="o">.</span><span class="n">multilineTextAlignment</span><span class="p">(</span><span class="n">alignment</span><span class="p">)</span>
+<span class="w">            </span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">minWidth</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">maxWidth</span><span class="p">:</span><span class="w"> </span><span class="o">.</span><span class="n">infinity</span><span class="p">,</span><span class="w"> </span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">frameAlignment</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">extension</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">fullWidth</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">TextAlignment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">.</span><span class="n">leading</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">some</span><span class="w"> </span><span class="n">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">modifier</span><span class="p">(</span><span class="n">FullWidthText</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span><span class="w"> </span><span class="n">alignment</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now we can clean up our previous code, producing the same result but with a much neater and easier to remember view modifier:</p>
+<div class="highlight"><pre><span></span><code><span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;When enabled, activity streaks will not be broken by a single day missed after six consecutive days of reaching your goal.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Allow Rest Days&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">allowRestDays</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Rest Days&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Unbroken Streaks&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">GroupBox</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Have Pedometer++ use your Apple Watch to measure your daily wheelchair push counts rather than steps.&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="n">Picker</span><span class="p">(</span><span class="s">&quot;Wheelchair Mode&quot;</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="err">$</span><span class="n">wheelchairMode</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Steps&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Pushes&quot;</span><span class="p">).</span><span class="n">tag</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">pickerStyle</span><span class="p">(.</span><span class="n">segmented</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+</code></pre></div>
+
+<p>As you may have noticed, it also supports providing the other <code>TextAlignment</code> options for multiline text, passed to the <code>.fullWidth(alignment:)</code> videw modifier: <code>.leading</code> (the default), <code>.centered</code>, and <code>.trailing</code>.</p>
+<p>Hopefully this can be of some use to you and help clear up some of the oddities surrounding the layout of text in SwiftUI! If you do find it helpful, I'd love for you to <a href="https://snailedit.social/@benbacardi">let me know</a>.</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2023/01/21/diamine-inkvent-2022/">Diamine Inkvent 2022</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/21/diamine-inkvent-2022/" class="post-date">21 January 2023</a>
+• <a href="/categories/#pens-ink">Pens & Ink</a>    </small>
+
+    <p>The Diamine Inkvent advent calendars are something I never imagined existed—24 small 12ml bottles of unique ink, and one 30ml bottle on Christmas Day. 2022 was the second year they produced one, and although I didn't buy one for advent itself, I did pick one up at half price a couple of days after Christmas from <a href="https://www.cultpens.com">Cult Pens</a>.</p>
+<p>The little 12ml bottles are adorably cute, and all the inks are somewhat Christmas- or winter-themed in name. I opened the calendar all in one go, and spent half an hour one afternoon swatching every ink. I can recommend a dip pen if you're going to do this—I used a Lamy Safari, dipping the nib into each bottle in turn, but thanks to the feed it was a bit more of a pain to clean between inks than a proper dip pen would have been.</p>
+<p><a href="/assets/diamine-inkvent-2022.png"><img alt="Diamine Inkvent 2022 swatches" src="/assets/diamine-inkvent-2022.png"></a></p>
+<p>I swabbed three to a swatch for my homemade <a href="https://wellappointeddesk.bigcartel.com/product/col-o-ring-ink-testing-book">col-o-ring</a>, and gave the large 30ml bottle its own. These are cards I've cut from 350gsm watercolour postcards, rounded the corners using a <a href="https://www.amazon.co.uk/dp/B09LHVFGVP">corner punch</a>, and punched a hole in to thread them through a keyring. The result is a fantastic way to flick through my available inks and make a choice, and I love having it as something to play with sitting on my desk:</p>
+<p><a href="/assets/col-o-ring.png"><img alt="My homemade col-o-ring ink swatches" src="/assets/col-o-ring.png"></a></p>
+<p><em>Speaking of which, how beautiful is that Van Diemen's <a href="https://www.vandiemansink.com.au/products/van-diemans-the-wilderness-series-azzure-kingfisher-30ml-shimmer-ink?shpxid=c58d90cd-9c27-4430-a56c-7f74146176c1">Azure Kingfisher</a> from the <a href="https://www.vandiemansink.com.au/collections/the-wilderness-series">Wilderness Series</a>? It has such a beautiful golden shimmer and a slight red sheen. It was a birthday gift from a couple of wonderful friends, along with a custom pen from <a href="https://www.instagram.com/justturnings/">Just Turnings</a> that matches it perfectly, and shows off its properties fantastically with a broad nib.</em></p>
+<p>I'm not sure I'm likely to buy the advent calendar full price next Christmas—it is a fair amount of money, and I have many inks I still haven't used yet from it—but I think they're a fantastic idea from Diamine. Judging by last year, they'll be selling each of the colours individually later in the year in larger bottles, so if there's any that really take my fancy I don't need to worry about 12ml not going particularly far.</p>
+<p>So far, my favourite is Flame, but I am particularly partial to a good orange. What's yours?</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2023/01/20/swift-charts-calendar-weekdays/">Swift Charts & Calendar Weekdays</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/20/swift-charts-calendar-weekdays/" class="post-date">20 January 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>I've recently been working on adding a statistics section to <a href="/pendulum/">Pendulum</a>, the pen pal tracking app I develop with my friend <a href="https://418teapot.net">Alex</a>. This seemed like the perfect opportunity to use <a href="https://developer.apple.com/documentation/charts">Swift Charts</a>, Apple's new charting framework.</p>
+<p>I ultimately wanted to end up with a graph like the following:</p>
+<p><a href="/assets/pendulum-weekday-chart.jpeg"><img alt="Bar chart showing the number of letters written and sent per day of the week" src="/assets/pendulum-weekday-chart.jpeg"></a></p>
+<p>Swift Charts can perfectly handle multiple datasets on one graph, but the problem I ran into was that it doesn't seem to have a way to natively aggregate data per <em>day of the week</em>. If I only had seven days worth of data, it would be fine—I could display just the day name on the axis, and no days would be repeated because I wouldn't be displaying more than a week of data. However, as I want to aggregate every event, this wasn't going to work. I decided to do the grouping of the data myself, and just pass Swift Charts a pre-binned dataset for it to present, where it wouldn't have to worry about dates at all.</p>
+<p>I had one other problem I wanted to solve: I wanted the graph to start on whatever the current locale thinks the start of the week is<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. For us in the UK and Europe, we generally consider Monday the beginning of the week, as reflected in the graph above. But for the US, it should probably start with Sunday.</p>
+<p>In order to generate the seven "bins" for the chart to show, I could use the handy <code>Calendar.current.shortWeekdaySymbols</code> property, which produces an array of the shortened names of the week, properly localised to the user's current locale. However, regardless of locale, this array always starts with Sunday and ends with Saturday. There's another property of the calendar, <code>.firstWeekday</code>, that returns a number between 1 (for Sunday) and 7 (for Saturday) representing what the locale considers to be the first day of the week. Using this, I can shift the array from <code>shortWeekdaySymbols</code> to produce the output in the right order. I decided to wrap both these pieces of information up in an enum to represent each day of the week:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="nc">Weekday</span><span class="p">:</span> <span class="nb">Int</span><span class="p">,</span> <span class="n">CaseIterable</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">sun</span> <span class="p">=</span> <span class="mi">1</span>
+    <span class="k">case</span> <span class="n">mon</span> <span class="p">=</span> <span class="mi">2</span>
+    <span class="k">case</span> <span class="n">tue</span> <span class="p">=</span> <span class="mi">3</span>
+    <span class="k">case</span> <span class="n">wed</span> <span class="p">=</span> <span class="mi">4</span>
+    <span class="k">case</span> <span class="n">thu</span> <span class="p">=</span> <span class="mi">5</span>
+    <span class="k">case</span> <span class="n">fri</span> <span class="p">=</span> <span class="mi">6</span>
+    <span class="k">case</span> <span class="n">sat</span> <span class="p">=</span> <span class="mi">7</span>
+
+    <span class="kd">var</span> <span class="nv">shortName</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">shortWeekdaySymbols</span><span class="p">[</span><span class="kc">self</span><span class="p">.</span><span class="n">rawValue</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="kd">static</span> <span class="kd">var</span> <span class="nv">orderedCases</span><span class="p">:</span> <span class="p">[</span><span class="n">Weekday</span><span class="p">]</span> <span class="p">{</span>
+        <span class="kc">Self</span><span class="p">.</span><span class="n">allCases</span><span class="p">.</span><span class="n">shiftRight</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">firstWeekday</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>You'll also notice I'm using an extension to <code>Array</code> that allows me to shift an array, wrapping the values around to the end as they get popped off the front:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">Array</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">shiftRight</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="p">[</span><span class="n">Element</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">guard</span> <span class="bp">count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">self</span> <span class="p">}</span>
+        <span class="kd">var</span> <span class="nv">amount</span> <span class="p">=</span> <span class="n">by</span>
+        <span class="bp">assert</span><span class="p">(</span><span class="o">-</span><span class="bp">count</span><span class="p">...</span><span class="bp">count</span> <span class="o">~=</span> <span class="n">amount</span><span class="p">,</span> <span class="s">&quot;Shift amount out of bounds&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="p">{</span> <span class="n">amount</span> <span class="o">+=</span> <span class="bp">count</span> <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">Array</span><span class="p">(</span><span class="kc">self</span><span class="p">[</span><span class="n">amount</span> <span class="p">..</span><span class="o">&lt;</span> <span class="bp">count</span><span class="p">]</span> <span class="o">+</span> <span class="kc">self</span><span class="p">[</span><span class="mi">0</span> <span class="p">..</span><span class="o">&lt;</span> <span class="n">amount</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Now that I have an enum I can use to represent the days of the week correctly, and order them as defined  by the user's locale, I needed to use this somehow to generate data to pass to the chart. I started off by defining a struct to hold a single datapoint:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">StatusCountByDay</span><span class="p">:</span> <span class="n">Identifiable</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">status</span><span class="p">:</span> <span class="n">EventType</span>
+    <span class="kd">let</span> <span class="nv">day</span><span class="p">:</span> <span class="n">Weekday</span>
+    <span class="kd">let</span> <span class="nv">count</span><span class="p">:</span> <span class="nb">Int</span>
+    <span class="kd">var</span> <span class="nv">id</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span> <span class="s">&quot;</span><span class="si">\(</span><span class="n">day</span><span class="si">)</span><span class="s">-</span><span class="si">\(</span><span class="n">status</span><span class="p">.</span><span class="n">rawValue</span><span class="si">)</span><span class="s">&quot;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Here, <code>EventType</code> is an internal enum used by Pendulum to mark whether the event was a letter being sent, written, received, etc. What makes each data point unique in the chart is the combination of the day of the week, and the event type, so I combine those two together as the <code>id</code> for the struct.</p>
+<p>Next, I needed to fetch the data and group it into buckets:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">days</span><span class="p">:</span> <span class="p">[</span><span class="n">Weekday</span><span class="p">:</span> <span class="p">[</span><span class="n">Event</span><span class="p">]]</span> <span class="p">=</span> <span class="p">[:]</span>
+
+<span class="k">for</span> <span class="n">event</span> <span class="k">in</span> <span class="n">Event</span><span class="p">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">withStatus</span><span class="p">:</span> <span class="p">[.</span><span class="n">written</span><span class="p">,</span> <span class="p">.</span><span class="n">sent</span><span class="p">])</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="o">!</span><span class="n">days</span><span class="p">.</span><span class="n">keys</span><span class="p">.</span><span class="bp">contains</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">days</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+     <span class="p">}</span>
+     <span class="n">days</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">wrappedDate</span><span class="p">.</span><span class="n">weekday</span><span class="p">]?.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>I start by defining a dictionary mapping weekdays to an array of events, and then looping over the events I'm interested in and adding them to the corresponding weekday key in the dictionary. This necessitated another extension to a <code>Foundation</code> object, this time on <code>Date</code><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">Date</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">dayNumberOfWeek</span><span class="p">:</span> <span class="nb">Int</span><span class="p">?</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Calendar</span><span class="p">.</span><span class="n">current</span><span class="p">.</span><span class="n">dateComponents</span><span class="p">([.</span><span class="n">weekday</span><span class="p">],</span> <span class="n">from</span><span class="p">:</span> <span class="kc">self</span><span class="p">).</span><span class="n">weekday</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">weekday</span><span class="p">:</span> <span class="n">Weekday</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Weekday</span><span class="p">(</span><span class="n">rawValue</span><span class="p">:</span> <span class="n">dayNumberOfWeek</span> <span class="p">??</span> <span class="mi">0</span><span class="p">)</span> <span class="p">??</span> <span class="p">.</span><span class="n">sun</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This uses the <code>.weekday</code> date component from the user's current calendar, which returns the same 1–7 index as used by <code>.firstWeekday</code>, and returns the corresponding <code>Weekday</code> object.</p>
+<p>With the data correctly bucketed, it was time to sum up the series and create the datapoints for the chart. When the data provided is not sequential (such as a series of dates) but is instead discrete (such as list of names, for example) Swift Charts will draw the bars in the order in which it first encounters them. You may think that weekdays are sequential—and you'd be right—but in this case, they're not an object that Swift Charts understands in that way. So to draw the chart as intended, we need to create a <code>StatusCountByDay</code> instance for each weekday in the order we want. We also need to include one even when the count for that day is zero, because we don't want the chart to just skip a day. I do this by looping over the weekdays ordered according to the locale, inside that looping over each event type, and calculating the sum for each:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">results</span><span class="p">:</span> <span class="p">[</span><span class="n">StatusCountByDay</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">eventType</span> <span class="k">in</span> <span class="p">[</span><span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">]</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">day</span> <span class="k">in</span> <span class="n">Weekday</span><span class="p">.</span><span class="n">orderedCases</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nv">count</span> <span class="p">=</span> <span class="p">(</span><span class="n">days</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="p">??</span> <span class="p">[]).</span><span class="bp">filter</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">type</span> <span class="p">==</span> <span class="n">eventType</span> <span class="p">}.</span><span class="bp">count</span>
+        <span class="n">results</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="n">eventType</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="bp">count</span><span class="p">))</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Ultimately, we end up with a series of data like the following:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sun</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">mon</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">tue</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">wed</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">thu</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">12</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">fri</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">sent</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sat</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sun</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">mon</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">tue</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">wed</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">thu</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">fri</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">StatusCountByDay</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="p">.</span><span class="n">written</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="p">.</span><span class="n">sat</span><span class="p">,</span> <span class="bp">count</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>All that's left is to pass that to Swift Charts, for which I'll break down each section after I show the code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Chart</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="p">{</span> <span class="n">data</span> <span class="k">in</span>
+    <span class="n">BarMark</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;Day&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">day</span><span class="p">.</span><span class="n">shortName</span><span class="p">),</span>
+        <span class="n">y</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;Count&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="n">annotation</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">,</span> <span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">.</span><span class="bp">count</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="s">&quot;</span><span class="si">\(</span><span class="n">data</span><span class="p">.</span><span class="bp">count</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">footnote</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">color</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">opacity</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">foregroundStyle</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;event&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">position</span><span class="p">(</span><span class="n">by</span><span class="p">:</span> <span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">&quot;event&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">status</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="n">chartForegroundStyleScale</span><span class="p">([</span>
+    <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">:</span> <span class="n">EventType</span><span class="p">.</span><span class="n">sent</span><span class="p">.</span><span class="n">color</span><span class="p">,</span>
+    <span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">.</span><span class="n">actionableTextShort</span><span class="p">:</span> <span class="n">EventType</span><span class="p">.</span><span class="n">written</span><span class="p">.</span><span class="n">color</span><span class="p">,</span>
+<span class="p">])</span>
+</code></pre></div>
+
+<p>Firstly, we want a bar chart, so the correct type of mark to use is a <code>BarMark</code>. The <code>x</code> axis is the short name of the weekday ("Mon", "Tue", etc), and the <code>y</code> axis is the count.</p>
+<p>The <code>.annotation</code> section puts the little figures above each bar, and isn't particularly necessary but I liked the way it looked.</p>
+<p>The two <code>BarMark</code> modifiers <code>.foregroundStyle(by:)</code> and <code>.position(by:)</code> both tell Swift Charts how to define and handle each series independently; otherwise, they'd be a single bar, stacked on top of each other within each day. Grouping them by event type, the first modifier tells them to be different colours, and the second puts them as independent bars side by side instead of on top of each other. I use <code>data.status.actionableTextShort</code> as the value to distinguish the data by, because that is what I want shown in the legend beneath the chart ("Sent" vs "Written", etc).</p>
+<p>You can see below the results of the chart without the <code>.position(by:)</code> modifier, and without the <code>.foregroundStyle(by:)</code> modifier, respectively.</p>
+<p><img alt="The chart without each modifier" src="/assets/pendulum-chart-modifiers.png"></p>
+<p>Finally, the <code>.chartForegroundStyleScale</code> modifier defines the colours to be used for each series, which is a dictionary mapping the name of the series to its colour. In this case, I use want them using the colour defined for the event type, to keep it consistent with the rest of the app.</p>
+<hr>
+<p>I'm quite impressed with Swift Charts and how easy it makes drawing a good looking chart, but there are definitely some things that could be more obvious about it. The lack of decent documentation <em>with plenty of examples and screenshots</em> being a very clear area for improvement!</p>
+<hr>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Yes, I realise none of the rest of the app is localised. Baby steps, though!&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>As you may have realised by now, I'm quite a fan of writing extensions to standard types for common functions that could end up being performed regularly. They make the rest of the code a lot cleaner. It's one of my favourite features of Swift.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2023/01/20/review-lego-monster-jam-trucks/">Review: LEGO Monster Jam Trucks</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/20/review-lego-monster-jam-trucks/" class="post-date">20 January 2023</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>Recently, two more reviews of mine went up on Brickset: one for <a href="https://brickset.com/article/88534/review-42149-monster-jam-dragon">42149 Monster Jam Dragon</a> and the other for its counterpart, <a href="https://brickset.com/article/88535/review-42150-monster-jam-monster-mutt-dalmation">42150 Monster Jam Monster Mutt Dalmation</a>. They're part of a small series that LEGO has released over the past few years, with two pull-back-and-go Technic monster trucks from the <a href="https://www.monsterjam.com">Monster Jam</a> sport. Spoilers for the reviews, but I think they're great little "intro to Technic" sets, and you can't go wrong at less than £18.</p>
+<p><img alt="Monster Jam LEGO Sets" src="https://images.brickset.com/news/88534_IMG_1897.jpg"></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/88236/review-40651-australia-postcard">Review: 40651 Australia Postcard</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/01/03/review-40651-australia-postcard/" class="post-date">3 January 2023</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>I've quite liked the previous sets in the LEGO Postcard series, so it was good to get a chance to review the latest, <a href="https://brickset.com/sets/40651-1">40651</a> Australia, even if it's a <a href="https://brickset.com/article/88236/review-40651-australia-postcard">slight departure from the rest</a>:</p>
+<blockquote>
+<p>The designers have chosen to represent the entirety of Australia with a small shack, a windpump, an outdoor toilet, a large tree with a cockatoo, and a sign warning of kangaroos. There's also a Qantas plane flying through the bright blue sky, and small colourful plants growing around the ground.</p>
+</blockquote>
+<p><img alt="Australia Postcard LEGO set" src="https://images.brickset.com/news/88236_IMG_1873.jpg"></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/news/category-Holiday-gift-guide">Brickset LEGO Gift Guide - $50 and up</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/11/23/brickset-lego-gift-guide-50-and-up/" class="post-date">23 November 2022</a>
+• <a href="/categories/#lego">LEGO</a>    </small>
+
+    <p>The last two holiday gift guides have been published at Brickset, where we've chosen a number of sets in a variety of price brackets. Go and check out the sets between <a href="https://brickset.com/article/84508/holiday-gift-guide-50-100">$50 to $100</a>, <a href="https://brickset.com/article/84509/holiday-gift-guide-100-200">$100 to $200</a>, and <a href="https://brickset.com/article/84510/holiday-gift-guide-over-200">$200 and up!</a></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/news/category-Holiday-gift-guide">Brickset LEGO Gift Guide</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/11/20/brickset-lego-gift-guide/" class="post-date">20 November 2022</a>
+• <a href="/categories/#lego">LEGO</a>    </small>
+
+    <p>Brickset have started publishing their annual Gift Guide, and this year Huw asked for my thoughts to be included. So far, guides for the first two price ranges have been released, for sets <a href="https://brickset.com/article/84506/holiday-gift-guide-under-25">under $25</a> and sets priced <a href="https://brickset.com/article/84507/holiday-gift-guide-25-50">between $25 and $50</a>. Click through to see my recommendations!</p>
+<p><img alt="" src="https://images.brickset.com/news/84506_hgg2.jpg"></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/82125/review-71409-big-spike-s-cloudtop-challenge">Review: 71409 Big Spike's Cloudtop Challenge</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/28/review-71409-big-spikes-cloudtop-challenge/" class="post-date">28 October 2022</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>The last of this round of Super Mario LEGO sets to review, <a href="https://brickset.com/sets/71409-1">71409</a> Big Spike's Cloudtop Challenge:</p>
+<blockquote>
+<p>LEGO keep on producing Super Mario expansion sets to add to what is clearly a popular theme for them—this year they have released <a href="https://brickset.com/sets/subtheme-Expansion-Set/year-2022">14 distinct sets</a> in the range so far. <a href="https://brickset.com/sets/71409-1">71409</a> Big Spike's Cloudtop Challenge is one of the largest, with 540 parts, and packs a decent punch: three opponents, two of which are new, and some fun takes on the interactivity and game play we've come to expect with these sets.</p>
+</blockquote>
+<p><img alt="Big Spike's Cloudtop Challenge LEGO set" src="https://images.brickset.com/news/82125_IMG_1871.jpg"></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/84185/lego-ideas-review-results-four-projects-approved!">LEGO IDEAS Review Results</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/27/lego-ideas-review-results/" class="post-date">27 October 2022</a>
+• <a href="/categories/#lego">LEGO</a>    </small>
+
+    <p>LEGO have announced the results of the latest <a href="https://ideas.lego.com/">IDEAS</a> review (the mechanism by which fan-designed models can get made into real LEGO sets, should they reach 10,000 votes and pass the review). Four projects were accepted this time, and I particularly like the look of the Space Age designs, which will hopefully be an instant buy when it eventually comes out some time in 2023/2024. The other three ideas also look fantastic, and it will be interesting to see how LEGO adapts them to become production-ready sets. I hope they include <a href="https://chrismcveigh.com/cm/welcome.html">Chris McVeigh</a> on the team designing the Polaroid, as that is right up his alley!</p>
+<h3><a href="https://ideas.lego.com/projects/08ccddc2-e926-4a7b-8287-26b40649bada">Tales of the Space Age</a> by <a href="https://ideas.lego.com/profile/53c6910b-7bac-4e93-8def-e81172084bb8/entries?query=&amp;sort=top">John Carter</a></h3>
+<p><img alt="Tales of the Space Age LEGO IDEAS by John Carter" src="https://ideascdn.lego.com/media/generate/lego_ci/7c69dc4b-3a42-4458-82ac-c2c1dbf55b50/resize:950:633/webp"></p>
+<h3><a href="https://ideas.lego.com/projects/39eb392e-0a3d-481b-b157-8f586082761e">LEGO Insects</a> by <a href="https://ideas.lego.com/profile/622fee18-3adf-4c66-8b4e-eb8f78d27eef/entries?query=&amp;sort=top">hachiroku24</a></h3>
+<p><img alt="LEGO Insects Ideas by hachiroku24" src="https://ideascdn.lego.com/media/generate/public/lego_ci/317ac69b-ba4c-4840-ac9d-beb3bd65b61e/resize:1600:900/legacy"></p>
+<h3><a href="https://ideas.lego.com/projects/200dd32e-8ec8-44aa-8f7d-e4dcc6f74e5c">Polaroid OneStep SX-70</a> by <a href="https://ideas.lego.com/profile/cb41754b-5ba3-425f-8051-5bb0be7b5c19/entries?query=&amp;sort=top">Minibrick Productions</a></h3>
+<p><img alt="Polaroid OneStep SX-70 LEGO IDEAS by Minibrick Productions" src="https://ideascdn.lego.com/media/generate/public/lego_ci/fb14594a-f8bc-4511-854a-6b01c08e7daa/resize:1600:900/legacy"></p>
+<h3><a href="https://ideas.lego.com/projects/568ee861-3b62-413a-9432-ce1d3a98c61a">The Orient Express, a Legendary Train</a> by <a href="https://ideas.lego.com/profile/78b8fed9-8061-4f24-845d-314b5c9aa4ec/entries?query=&amp;sort=top">LEt.sGO</a></h3>
+<p><img alt="The Orient Express LEGO IDEAS by LEt.sGO" src="https://ideascdn.lego.com/media/generate/public/lego_ci/0b5fbaf0-206e-4a27-8951-eca80e883ba3/resize:1600:900/legacy"></p>
+
+  </div>
+<div class="pagination mb-5 d-flex justify-content-between">
+
+    <a href="/index2.html">← Older</a>
+
+
+    <span class="text-muted">Newer →</span>
+
+</div>
+
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

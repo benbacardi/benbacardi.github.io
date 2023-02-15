@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>UserDefaults, @AppStorage, and Data Types • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="UserDefaults, @AppStorage, and Data Types">
+<meta property="og:description" content="As I'm starting to play more seriously with iOS app development, Xcode, and Swift, I'm starting to come up with a variety of patterns I use in the various toy apps I mess around with that make working with certain APIs or frameworks easier. One of these is UserDefaults, which …">
+<meta property="og:url" content="/2022/09/29/userdefaults-appstorage-and-data-types/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          UserDefaults, @AppStorage, and Data Types
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/09/29/userdefaults-appstorage-and-data-types/" class="post-date">29 September 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+•          <a href="/tags/#apps">Apps</a>
+    </small>
+
+    <p>As I'm starting to play more seriously with iOS app development, Xcode, and Swift, I'm starting to come up with a variety of patterns I use in the various toy apps I mess around with that make working with certain APIs or frameworks easier. One of these is <code>UserDefaults</code>, which provides an easy way to store persistent data between app launches.</p>
+<p>The basic way to interact with <code>UserDefaults</code> is to set values by assigning a data type to a particular key (which are strings), and reading that key later:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Storing a boolean value</span>
+<span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="s">&quot;hasPerformedInitialSync&quot;</span><span class="p">)</span>
+
+<span class="c1">// Retrieving a boolean value</span>
+<span class="kd">let</span> <span class="nv">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">bool</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="s">&quot;hasPerformedInitialSync&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>There are two problems with this, though:</p>
+<ol>
+<li>Using string-based keys is error-prone; it can't be checked by the compiler, so an overlooked typo can lead to unexpected behaviour that's difficult to debug.</li>
+<li>SwiftUI is based around watching state variables for changes, and redrawing views based upon this; how can we tie <code>UserDefaults</code> into that?</li>
+</ol>
+<h2>A <code>UserDefaults</code> extension</h2>
+<p>The first problem is one I've started solving by creating an extension to the <code>UserDefaults</code> class. I put this in a new Swift file (usually <code>Extensions/UserDefaults.swift</code>), with code such as the following:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+    <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">hasPerformedInitialSync</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">{</span>
+        <span class="kr">get</span> <span class="p">{</span> <span class="n">bool</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+        <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This has promoted the previous string-based keys we were using to an <code>enum</code>: the compiler is now able to check our keys for us and produce errors at compile time if we use one we haven't defined. An additional computed property on the <code>UserDefaults</code> class hides the get and set logic from us, so in the rest of our code we need only do the following:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Storing a boolean value</span>
+<span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="c1">// Retrieving a boolean value</span>
+<span class="kd">let</span> <span class="nv">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span>
+</code></pre></div>
+
+<p>Hurray! No more string-based keys to remember. But what about the second problem?</p>
+<p>Up until recently, I was syncing <code>UserDefaults</code> changes with SwiftUI view state by storing a related <code>@State</code> variable, and tying it to the corresponding <code>UserDefaults</code> key using <code>onAppear</code> and <code>onChange(of:)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">ContentView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+  <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">NavigationView</span> <span class="p">{</span>
+      <span class="c1">// View code</span>
+      <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="kc">true</span>
+      <span class="p">})</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Sync Done!&quot;</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onAppear</span> <span class="p">{</span>
+      <span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onChange</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="err">$</span><span class="n">hasPerformedInitialSync</span><span class="p">)</span> <span class="p">{</span> <span class="n">newValue</span> <span class="k">in</span>
+      <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">newValue</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This works by fetching the value stored in <code>UserDefaults</code> when the view first appears and assigning it to the state variable, and then watching the state variable for changes, and syncing those back to the <code>UserDefaults</code> key. But there are still problems with this:</p>
+<ol>
+<li>It's easy to forget to add the required line to <code>onAppear</code> or the <code>onChange</code> handler for a new variable.</li>
+<li>The view won't react to changes that happen to the <code>UserDefaults</code> key outside of its own interaction, such as if a presented sheet changes the value.</li>
+</ol>
+<p>Fortunately, SwiftUI introduced a new property wrapper similar to <code>@State</code> to help us with this.</p>
+<h2>Introducing <code>@AppStorage</code></h2>
+<p>Called <code>@AppStorage</code>, the new property wrapper lets you reference a <code>UserDefaults</code> key directly and bind it to a variable that will automatically sync changes between itself and <code>UserDefaults</code>. It can be used as such:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">ContentView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+  <span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="c1">// View code</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Note that there's no longer any need for the value to be read <code>onAppear</code>, or the changes to be observed using <code>onChange</code>. SwiftUI will take care of that for us, automatically syncing data back when actions within the view change the state variable's value. Very handy!</p>
+<h2>Supported Data Types</h2>
+<p>However, there are still limitations with this approach, one of which I ran into today and was banging my head against for quite some time until I realised the issue.</p>
+<p><code>UserDefaults</code> supports the storage of <a href="https://developer.apple.com/documentation/foundation/userdefaults">a variety of primitive data types</a>:</p>
+<ul>
+<li>Boolean</li>
+<li>String</li>
+<li>Integer</li>
+<li>Data</li>
+<li>URL</li>
+<li>Double</li>
+<li>Float</li>
+</ul>
+<p>It also supports storing arrays or dictionaries containing these primitive types, using the <code>array(forKey:)</code>, <code>stringArray(forKey:)</code>, and <code>dictionary(forKey:)</code> methods. <code>AppStorage</code>, however, does not support this. Apple's <a href="https://developer.apple.com/documentation/swiftui/appstorage">documentation for <code>AppStorage</code></a> lists the <code>init</code> methods available, and they can return:</p>
+<ul>
+<li>String</li>
+<li>Integer</li>
+<li>Data</li>
+<li>URL</li>
+<li>Double</li>
+<li>Boolean</li>
+</ul>
+<p>It's missing <code>Float</code>—I didn't care about that—and the <code>Array</code> and <code>Dictionary</code> methods—I <em>did</em> care about those. I had created my <code>UserDefaults</code> extension, as normal:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+    <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">favouriteColours</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">favouriteColours</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">]</span> <span class="p">{</span>
+        <span class="kr">get</span> <span class="p">{</span> <span class="n">stringArray</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">??</span> <span class="p">[]</span> <span class="p">}</span>
+        <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>That worked fine, as expected. But when I tried to use it with <code>@AppStorage</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">favouriteColours</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+</code></pre></div>
+
+<p>the compiler threw up the error <code>No exact matches in call to initializer</code>. Helpful. It turns out that's because of the lack of support for the collection methods, and I had to resort to using my original <code>onAppear</code>/<code>onChange</code> workaround.</p>
+<h2>It's not all bad, though!</h2>
+<p>Despite this frustrating limitation with <code>AppStorage</code> (which I hope is fixed in a future SwiftUI release), I really like the <code>UserDefaults</code> extension method for working with the API. There's two more things I want to mention about it. One, it can be used to store or return any data type, as long as you can easily convert it to or from one of the supported types. For example, storing a custom <code>enum</code> is easy. Make the <code>enum</code> inherit from <code>Int</code> or <code>String</code>, and you're off to the races:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="nc">Mode</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">light</span>
+  <span class="k">case</span> <span class="n">dark</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+  <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">preferredMode</span>
+  <span class="p">}</span>
+  <span class="kd">var</span> <span class="nv">preferredMode</span><span class="p">:</span> <span class="n">Mode</span> <span class="p">{</span>
+    <span class="kr">get</span> <span class="p">{</span> <span class="n">Mode</span><span class="p">(</span><span class="n">rawValue</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.,</span><span class="n">rawValue</span><span class="p">))</span> <span class="p">??</span> <span class="p">.</span><span class="n">light</span> <span class="p">}</span>
+    <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">.</span><span class="n">rawValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Secondly, if you want to be able to access the data you're storing in other targets, such as a widget, the extension is a great place to create a static property that uses a group identifier:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+  <span class="kd">static</span> <span class="kd">let</span> <span class="nv">shared</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">(</span><span class="n">suiteName</span><span class="p">:</span> <span class="s">&quot;group.com.myapp.AppName&quot;</span><span class="p">)</span><span class="o">!</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Accessing <code>UserDefaults.shared</code> instead of <code>UserDefaults.standard</code> will allow it to be read and written from any targets that have access to the specified group identifier. Additionally, SwiftUI provides two different ways of specifying that you want to use <code>.shared</code> instead of <code>.standard</code>. It can be done on a per-variable basis by passing the <code>store:</code> parameter to <code>@AppStorage</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.</span><span class="n">rawValue</span><span class="p">,</span> <span class="n">store</span><span class="p">:</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">shared</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">preferredMode</span><span class="p">:</span> <span class="n">Mode</span> <span class="p">=</span> <span class="p">.</span><span class="n">light</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Or it can be made the default for all child views within a hierarchy:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">MyApp</span><span class="p">:</span> <span class="n">App</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">Scene</span> <span class="p">{</span>
+        <span class="n">WindowGroup</span> <span class="p">{</span>
+            <span class="n">ContentView</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">defaultAppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">shared</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Both of which make working with <code>UserDefaults</code> cross-application much easier.</p>
+<p>Anyway, I'm mostly writing this down so that the next time I'm struggling with it I can prompt myself on how it works and why I've done things a certain way; but maybe it can help you, too!</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

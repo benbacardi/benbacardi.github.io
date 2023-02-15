@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Ben Cardy • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post ">
+
+    <h1>
+          <a href="/2022/10/26/darker-sublime-text-plugin/">Darker Sublime Text Plugin</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/26/darker-sublime-text-plugin/" class="post-date">26 October 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#python">Python</a>
+    </small>
+
+    <p><a href="https://github.com/psf/black">Black</a> is a popular code formatter for Python code, known for its opinionated uncompromising stance. It's incredibly helpful for teams working on common Python code to write in the same style, and Black makes that easy, without having to maintain a common set of configuration options between the team members. After all, there aren't any.</p>
+<p>However, adding it to an existing codebase is difficult. It wants to reformat every source file, which can be a pain with version history by creating commits that are purely formatting changes, or adding misleading diffs to commits that are intended for something else. To help overcome this, <a href="https://github.com/akaihola/darker">Darker</a> was created, which runs Black but only on the parts of code that have changed since the last commit. This is perfect for running as a post-save hook in your IDE, to consistently keep your code up to style without altering the parts of the source you haven't changed.</p>
+<p>The Darker documentation includes instructions on how to integrate the formatter with PyCharm, IntelliJ IDEA, Visual Studio Code, Vim, and Emacs—but I use Sublime Text. All it took was to write a simple Sublime Plugin, however, and we're off to the races:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">sublime_plugin</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+
+<span class="k">class</span> <span class="nc">DarkerOnSave</span><span class="p">(</span><span class="n">sublime_plugin</span><span class="o">.</span><span class="n">EventListener</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_post_save_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">file_name</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">match_selector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source.python&quot;</span><span class="p">):</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&quot;darker&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+</code></pre></div>
+
+<p>To add this yourself, go to <strong>Tools &gt; Developer &gt; New Plugin…</strong> from the menubar, and replace the contents of the file with the above. Save the file as something like <code>darker-on-save.py</code> in the same location it was created in (the default in the save dialog box), and now every time you hit Save on a Python file, it'll ensure that the code you added or altered is up to scratch with your style guide. Simple!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2022/10/10/useful-avrae-aliases/">Useful Avrae Aliases</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/10/useful-avrae-aliases/" class="post-date">10 October 2022</a>
+• <a href="/categories/#dd">D&D</a>        •
+          <a href="/tags/#avrae">Avrae</a>
+    </small>
+
+    <p><a href="https://avrae.io/">Avrae</a> is a Discord bot that makes running and playing D&amp;D play-by-post games much easier—it provides useful tools such as integration with <a href="https://www.dndbeyond.com/">D&amp;D Beyond</a>, powerful dice-rolling options, and combat initiative tracking.</p>
+<p>However, there are some things it doesn't do well natively. For this, it provides a powerful scripting API via <a href="https://avrae.readthedocs.io/en/latest/aliasing/aliasing.html">aliases and snippets</a> for you to extend its functionality with your own commands. Many people have written their own, and these are a few of the custom commands that we have set up in our games to make life just a little bit easier.</p>
+<p>To use any of these aliases, paste the text in the code blocks below into a DM with Avrae (or any channel they are a member of).</p>
+<h2>Quick Character Switcher</h2>
+<p>When you link a character from D&amp;D Beyond, Avrae will remember it and allow you to use the character in combat and for ability checks, etc. However, if you're playing in multiple games, you have to constantly remember to change the active character to the correct one before continuing. We found a handy alias on the Avrae Developer's Discord for assigning characters to channels, so instead of remembering that "in this channel, I'm Kaith, but in this channel, I'm Elmer", you can just run <code>!ch</code> to switch to the right character for that game. I'm reproducing that here (tweaked for a recent Avrae update that deprecated a couple of the commands):</p>
+<div class="highlight"><pre><span></span><code><span class="err">!</span><span class="n">alias</span> <span class="n">ch</span> <span class="p">{{</span><span class="n">c</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">R</span><span class="o">=</span><span class="n">load_json</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="s1">&#39;chars&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{},</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">id</span><span class="p">),</span><span class="s1">&#39;s&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">guild</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)}</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">ARGS</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="o">&amp;</span><span class="n">ARGS</span><span class="o">&amp;</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;- This Channel&#39;</span><span class="p">,</span><span class="s1">&#39;- This Server&#39;</span> <span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">%x</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">roll</span><span class="p">(</span><span class="s1">&#39;1d16777216&#39;</span><span class="p">)}}{{</span><span class="n">m</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;add&#39;</span>  <span class="k">else</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;delete&#39;</span>  <span class="k">else</span> <span class="mi">3</span> <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;roster&#39;</span> <span class="k">else</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;help?&#39;</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="k">else</span> <span class="mi">0</span><span class="p">}}{{</span><span class="n">x</span><span class="o">=</span><span class="ow">not</span> <span class="n">m</span> <span class="ow">or</span> <span class="p">((</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">c</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;chan&#39;</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">)}}{{</span><span class="n">X</span><span class="o">=</span><span class="ow">not</span> <span class="n">m</span> <span class="ow">or</span> <span class="p">((</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">c</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s1">&#39;chan&#39;</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="k">else</span> <span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">)}}{{</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">X</span><span class="p">)}}{{</span><span class="n">emb</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39; -title &quot;Quick Character Changer&quot; -footer &quot;!ch [help|?] - Bring up the help window&quot; -color </span><span class="si">{</span><span class="n">R</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">}}{{</span><span class="n">A</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="nb">id</span><span class="o">.</span><span class="n">c</span><span class="p">][:</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">][:</span><span class="mi">1</span><span class="p">])}}{{</span><span class="n">add</span><span class="o">=</span><span class="ow">not</span> <span class="n">m</span><span class="o">==</span><span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span>  <span class="n">a</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">x</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]})</span> <span class="ow">or</span> <span class="n">set_uvar</span><span class="p">(</span><span class="s1">&#39;chars&#39;</span><span class="p">,</span><span class="n">dump_json</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="ow">or</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]}}{{</span><span class="n">delete</span><span class="o">=</span><span class="ow">not</span> <span class="n">m</span><span class="o">==</span><span class="mi">2</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">set_uvar</span><span class="p">(</span><span class="s1">&#39;chars&#39;</span><span class="p">,</span> <span class="n">dump_json</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="ow">or</span> <span class="n">X</span><span class="p">}}{{</span><span class="s2">&quot;embed &quot;</span><span class="o">+</span><span class="n">emb</span><span class="o">+</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-t 10 -desc &quot;Added `</span><span class="si">{</span><span class="n">add</span><span class="si">}</span><span class="s1">` to ID `</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1">`.&quot;&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;-t 10 -desc &quot;</span><span class="si">{</span><span class="s2">&quot;No char found for ID&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s2">&quot;Removed `</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` with ID&quot;</span><span class="si">}</span><span class="s1"> `</span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s1">`.&quot;&#39;</span> <span class="k">if</span> <span class="n">m</span><span class="o">==</span><span class="mi">2</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;-t 20 -f &quot;Roster| </span><span class="si">{</span><span class="n">n</span><span class="o">+</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">` - `</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2"> ` </span><span class="si">{</span><span class="n">h</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">id</span><span class="o">.</span><span class="n">c</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">H</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">w</span><span class="si">}</span><span class="s2"> &quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">c</span><span class="p">])</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;*None*&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">if</span> <span class="n">m</span><span class="o">==</span><span class="mi">3</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;-f &quot;!ch|Changes to the appropriate character for the channel/server.&quot; -f &quot;!ch roster|View a list of all channel/server id</span><span class="se">\&#39;</span><span class="s1">s and the character they will load&quot; -f &quot;!ch add &lt;name&gt; [chan⏐id]|Adds `name` to the selected id. Default is server id, `chan` selects the channel id, or you can input the channel/server id manually&quot; -f &quot;!ch delete [chan⏐id]|Deletes the given id. Default is server id, `chan` selects the channel id, or you can input the channel/server id manually&quot; -f &quot;Current ID</span><span class="se">\&#39;</span><span class="s1">s|`Channel` - `</span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">c</span><span class="si">}</span><span class="s1">`</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">`Server` - `</span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="si">}</span><span class="s1">`&quot;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span> <span class="k">else</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;char </span><span class="si">{</span><span class="n">A</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">A</span> <span class="k">else</span> <span class="s2">&quot;embed -t 5 -desc &#39;Channel not found in list&#39;&quot;</span><span class="o">+</span><span class="n">emb</span><span class="p">)}}</span>
+</code></pre></div>
+
+<p>With that alias set, you can run <code>!ch add [character] chan</code> to assign the provided character to the current channel. Now, when you switch channels, you just have to run <code>!ch</code> to activate the right one.</p>
+<p>However, remembering to run <code>!ch</code> is easier said than done. How many times have I switched to a channel and run <code>!g lr</code> to give my character a long rest, before realising that I hadn't switched and had just given one of my other characters a poorly-timed rest instead? To solve this, we put together an alias (worked out mostly by my friend <a href="https://www.flexpotential.com/">Madi</a>) designed to prefix any command you may want to run, that automatically switches before executing the actual command you asked for:</p>
+<div class="highlight"><pre><span></span><code><span class="err">!</span><span class="n">alias</span> <span class="n">x</span> <span class="n">multiline</span>
+<span class="o">&lt;</span><span class="n">drac2</span><span class="o">&gt;</span>
+<span class="nb">id</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">id</span><span class="p">),</span><span class="s1">&#39;s&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">guild</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)}</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="s1">&#39;chars&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+<span class="n">n</span> <span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+<span class="n">A</span><span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="nb">id</span><span class="o">.</span><span class="n">c</span><span class="p">][:</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="nb">id</span><span class="o">.</span><span class="n">s</span><span class="p">][:</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;!char </span><span class="si">{</span><span class="n">A</span><span class="si">}</span><span class="s1">&#39;</span>
+<span class="o">&lt;/</span><span class="n">drac2</span><span class="o">&gt;</span>
+<span class="err">!</span><span class="o">&amp;*&amp;</span>
+</code></pre></div>
+
+<p>For me it's aliased to <code>x</code>, just to make it quick and easy to type. <code>!x check str</code> will always do a strength check for the right character for the game in <em>this</em> channel. <code>!x g lr</code> will always give the correct character a long rest. In combination with the <code>!ch</code> alias, this is probably the most handy alias I have set up—I only have to remember to always use <code>!x</code> instead of <code>!</code>, and it always just does the right thing.</p>
+<h2>Feat Spells</h2>
+<p>The other problem we frequently run into is using spells provided by feats. There are many feats that provide the with character additional spells; one's they're able to cast a particular number of times between rest, without using up spell slots. A good example is the <a href="https://www.dndbeyond.com/feats/magic-initiate">Magic Initiate</a> feat:</p>
+<blockquote>
+<p>Choose a class: bard, cleric, druid, sorcerer, warlock, or wizard. You learn two cantrips of your choice from that class's spell list.</p>
+<ul>
+<li>In addition, choose one 1st-level spell from that same list. You learn that spell and can cast it at its lowest level. Once you cast it, you must finish a long rest before you can cast it again using this feat.</li>
+</ul>
+</blockquote>
+<p>Avrae only partially understands these. Pulling from D&amp;D Beyond, it creates a custom counter for each spell you've learned, with the correct number of "bubbles" for the amount of times you can use it, such as the example in the screenshot below:</p>
+<p><img alt="Avrae custom counter output showing Magic Initiate - Command counter" src="/assets/avrae-1.png"></p>
+<p>Here, Scrat (my Hadozee character) has the <strong>Magic Initiate (Cleric): Command</strong> counter, that corresponds to his background feat providing that 1-st level spell. Avrae's also added the spell to Scrat's spellbook (<code>!sb</code>), meaning Scrat is able to cast it. However, they're not linked together in any way. Casting the spell uses a spell slot (it shouldn't) and doesn't update the counter (it should). This means that instead, there are a number of things I need to remember to do when casting the spell:</p>
+<ul>
+<li>Firstly, check the custom counter to see if it's been used or not (i.e. is the spell available to me, or do I need a long rest first).</li>
+<li>Cast the spell without using a spell slot (the <code>-i</code> flag to <code>!cast</code> or <code>!i cast</code> will do this).</li>
+<li>Decrement the counter.</li>
+</ul>
+<p>To solve this, I wrote a short alias I call <code>!featcast</code>, which can be used in place of <code>!cast</code> (or <code>!i cast</code>) to handle the above three things:</p>
+<div class="highlight"><pre><span></span><code><span class="err">!</span><span class="n">alias</span> <span class="n">featcast</span> <span class="p">{{</span><span class="n">a</span><span class="o">=&amp;</span><span class="n">ARGS</span><span class="o">&amp;</span><span class="p">}}{{</span><span class="n">H</span><span class="o">=</span><span class="ow">not</span> <span class="n">a</span> <span class="ow">or</span> <span class="s2">&quot;help&quot;</span> <span class="ow">in</span> <span class="n">a</span> <span class="ow">or</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="p">}}{{</span><span class="n">s</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">H</span> <span class="ow">or</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">H</span> <span class="ow">or</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:])}}</span><span class="n">multiline</span>
+<span class="o">&lt;</span><span class="n">drac2</span><span class="o">&gt;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">H</span><span class="p">:</span>
+    <span class="n">ch</span><span class="o">=</span><span class="n">character</span><span class="p">()</span>
+    <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">ccs</span><span class="o">=</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ch</span><span class="o">.</span><span class="n">consumables</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()))]</span>
+    <span class="n">cc</span><span class="o">=</span><span class="n">ccs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ccs</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">cc</span><span class="p">:</span>
+        <span class="n">t</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cc</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">cc</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">combat</span><span class="p">():</span>
+                <span class="n">i</span><span class="o">=</span><span class="s2">&quot;i &quot;</span>
+            <span class="n">cc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cc</span><span class="o">.</span><span class="n">value</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;!</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">cast &#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&#39; -i </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;!embed -title &#39;Cannot cast </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">!&#39; -desc &#39;</span><span class="si">{</span><span class="n">ch</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not have any uses of </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> from the </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> feat available.</span><span class="se">\n\n</span><span class="s2">**</span><span class="si">{</span><span class="n">cc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">**</span><span class="se">\n</span><span class="si">{</span><span class="n">cc</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;!embed -title &#39;Could not find a </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> custom counter&#39; -desc &#39;Check that your feats for **</span><span class="si">{</span><span class="n">ch</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">** are set up correctly.&#39; -thumb &lt;image&gt;&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;!embed -title &#39;Help for feat-casting&#39; -desc &#39;Use `!featcast &lt;spell&gt;` to cast a spell provided by a feat, instead of using your spell slots.&#39;&quot;</span>
+<span class="o">&lt;/</span><span class="n">drac2</span><span class="o">&gt;</span>
+</code></pre></div>
+
+<p>It relies on the fact that Avrae names the custom counters sensibly, in the format of "Feat Name: Spell Name". When typing <code>!featcast command -t Target1 -t Target2</code>, it will look for a custom counter named in that way that could possibly match the provided spell name. When it finds one, it checks for a free slot, and casts the spell (with the provided arguments), decrementing the counter.</p>
+<p>There are many feats and backgrounds that provide spells, and this alias has made handling them <em>much</em> easier. Hopefully it can be of some use in your games too!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/82124/review-71406-yoshi-s-gift-house">Review: 71406 Yoshi's Gift House</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/07/review-71406-yoshis-gift-house/" class="post-date">7 October 2022</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>I was given a few more of the LEGO <a href="https://brickset.com/news/category-Set-review/theme-Super-Mario">Super Mario</a> sets to review for Brickset, including <a href="https://brickset.com/article/82124/review-71406-yoshi-s-gift-house">71407</a> Yoshi's Gift House:</p>
+<blockquote>
+<p>Since I was a child, Yoshi has always been my favourite Super Mario character. I couldn't put my finger on why, but there's something very whimsical and fun about the dinosaur-like cartoon creature that's willing to carry Mario around on his back and help out wherever he can.</p>
+<p>He's an iconic part of Mario lore, and has fittingly appeared in a number of sets so far in the Super Mario line. <a href="https://brickset.com/sets/71406-1">71406</a> Yoshi's Gift House is the latest to feature the character, and is the largest with him as the sole protagonist.</p>
+</blockquote>
+<p><img alt="Yoshi's Gift House LEGO set" src="https://images.brickset.com/news/82124_IMG_1847.jpg"></p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2022/10/06/the-lost-jungles-of-rabbad-part-2/">The Lost Jungles of Rabbad: Part 2</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/06/the-lost-jungles-of-rabbad-part-2/" class="post-date">6 October 2022</a>
+• <a href="/categories/#dd">D&D</a>        •
+          <a href="/tags/#the-lost-jungles-of-rabbad">The Lost Jungles of Rabbad</a>
+    </small>
+
+    <p>This is part two in my ongoing series to summarise the <em>Lost Jungles of Rabbad</em> D&amp;D adventure I am taking part in. I previously wrote up <a href="/2022/07/07/the-lost-jungles-of-rabbad/">the first part</a>, so I highly recommend reading that before continuing here, if you haven't already!</p>
+<p><img alt="overgrown jungle" src="/assets/jungle.png"></p>
+<p>When we last left our fearless heroes, they had just defeated Dawn Song; on some level, at least—she had turned into a necrodragon, and flown off. Well, Deimos and Qhell weren't content to leave it at that, and chased after her but were unable to catch up. After licking their wounds, the group turned to examine the items she'd left behind. They found:</p>
+<ul>
+<li>the <strong>Helm of Earth</strong>, made of a simple dark brown wood;</li>
+<li>the <strong>Staff of Sight</strong>, golden, smooth and well-made;</li>
+<li>five diamonds; and</li>
+<li>an amulet made of a small animal skull dyed blood red.</li>
+</ul>
+<p>The Helm and Staff, together with Sumunar's Hammer, seem to make up the three of the four items that bind Fulgrin in his tomb. Kosta takes the helm, Elmer takes the staff.</p>
+<h3>Kosta's Absence Explained</h3>
+<p>Kosta disappeared down the mine, and was taken by Pelor to another plane. There, they meet with The Celestial, the patron with which Kosta did a deal previously. The gods appear to be fighting over him and his allegiance, with Pelor attempting to release Kosta from the binding deal he had unwittingly made with Mr C. They come to an arrangement: Mr C shall only demand four more tasks of Kosta, and Pelor will give him "the amulet".</p>
+<p>Kosta is taken to his old city of Fallen Oak, where he is watching the town under attack, two armies clashing. He watches Father Thason, his adopted father, struck down and killed. Kosta is told he has a choice to make: save Father Thason, or save the city from plunder, pillage, and murder. It is not clear whether the attack is happening in real time, the past, or the future, or even real. Kosta chooses the city, to the Celestial's anger.</p>
+<p>Back at the plane with Pelor, as one of his tasks Kosta is made to pick up a rapier by the Celestial that shocks him with a blast of energy and ages him a few decades. For the final task, the Celestial takes Kosta's right eye, replacing it with a pulsing purple orb, and disappears.</p>
+<p>Pelor then opens the heavens, looking down on the battle between the group and Dawn Song below. With a cry, Kosta jumps, and the portal closes behind him.</p>
+<h3>Qhell's Backstory</h3>
+<p>Qhell explains that he has met Dawn Song before:</p>
+<blockquote>
+<p>Several years ago I was taken as a slave, captured by some gang of outlaws. I was a curiosity, sold repeatedly, until I ended up on a ship. I didn’t know where I was or what they intended to do with me, except for that cat. She would come down to the hold every single day to leer at her cargo, torturing one lucky creature each day. She is evil, that’s all I know of her, and I vowed never to be in that position again.</p>
+</blockquote>
+<h3>Kosta's Eye, Father Thason, and Contacting the Gods</h3>
+<p>Kosta asks Elmer to study the glowing purple orb that has replaced his eye. Elmer can tell that it's deeply enchanted with powerful magic, beyond that of mortals.</p>
+<p>Kosta then heads off to find the clerics, who help him with the <em>scry</em> spell to try and locate Father Thason, but they are unable to. Without a clear direction, he tries to contact Pelor, to no avail, as Deimos also tries in vain to get in touch with Gargauth.</p>
+<h3>Sankra's Ice</h3>
+<p>At Elmer's suggestion, Nib takes another look through the Celestial book given to them by the General. He finds a passage that mentions:</p>
+<blockquote>
+<p>Moradin's Might, The Wild Mother's Clay, Savras's Eye, at the heart, Sankra's Ice</p>
+</blockquote>
+<p>The names line up with the four items, leaving Sankra's Ice to be the Crystal Blade. The group decide to head to Dawn Song's camp the following day to see what she had left behind.</p>
+<p>That night, Nib, Deimos, and Sumunar dream of the black plain again. Around the fire this time is Katrina, the devil, and a pale blue figure. Katrina tells them that the crystal blade is part of the lock, and the group should take the remaining three items back to the door to seal it again, at which point the three magical items they've found will be returned to their hiding places.</p>
+<h3>We Canoe!</h3>
+<p>Leaving Rafael at the fort, the party take a pair of canoes to cross the river's mouth and avoid going back through the gulch. After the crocodile fiasco, Kosta is put safely inside a magical ball for the journey. They're attacked on the way by giant sharks, and fight them off with difficulty, but eventually make it to the other shore. Due to the loss of a canoe, Elmer has to ride Qhell (as a Giant Sea Horse) for the rest of the journey.</p>
+<h3>Campfire Tales</h3>
+<p>They camp on the treeline of the beach. Nib tells stories of their excursions north:</p>
+<blockquote>
+<p>Last time we camped by the sea, was much colder than this. Was up north, near Tressmouth. We’d been hired to go track down the rumours of a lost tribe of elves deep in the arctic tundra. We’d sailed on a old ship, The Orphans Rage, north out of Nook, but hit difficulties about two days out of Northwatch. Ship went down, half the crew lost to the dark waves. Those of us that made it, washed up on this thin spit of land. We burnt what wreckage we could, the flames green with the salt, just to stave off the cold.</p>
+<p>As dawn broke, we had to head out. Only 12 of us left then. The cold claimed two more that first day, another the next.</p>
+<p>We hit a valley, some shelter from the winds, but soon lost in their midst. We turned one bend and there stood our doom, a dark beast of the ice. It feel on us, blood-stained claws tearing into us. We ran but it was faster. The end was upon us as a thick black arrow sailed into the crevasse. Then another, and another, another. Under the hail, the beast fell, and looking up we saw them, The Lost Elves, bows drawn. Their leader nodded at me, and like that, were gone. Just saved our lives and disappeared into the snow.</p>
+</blockquote>
+<h4>Sumunar's Story</h4>
+<blockquote>
+<p>"You all know that Jadel and I knew each other," <em>Sumunar takes up.</em> "We were in nearby villages, and played together sometimes as young orcs. Well, she had a sweet tusk like you would not believe. Always loved a bit of honey or sap-sugar. So one day we were out rambling, and came across a hive high up in a tree. She wanted to raid it, and I was not hard to convince. Well anyways, we got our little selves about halfway up, then realized we couldn't reach any higher. We tried going back down, but it was at an awkward angle and we couldn't manage. We must have sat there for three hours, arguing about whose fault it was and yelling for help occasionally. At last I grew so sick of waiting that I jumped down, and naturally broke my wrist. So then she was still stuck, and I was on the ground but holding my wrist and crying. Finally I got it together enough to run to the nearest village, and the grown-ups got Jadel down." <em>She pauses and laughs fondly.</em> "I forgave her quickly enough, but her nickname was Honey-Tusk for years afterwards."</p>
+</blockquote>
+<h3>A Visit From Elmer's Father</h3>
+<p>As Elmer takes watch that night, the figure of his father walks out of the water and berates him for running away, tells him to come home. An argument ensues, and Elmer refuses to go anywhere with him.</p>
+<h3>Sa'khuna's Statue</h3>
+<p>The next day, on their trek through the forest, the group come across a statue of a long-dead god of the hells, Sa'khuna. Coloured keys sit in locks, and as Kosta plays with them, a loud boom explodes from the statue. The roc approaches from the sky, and the party escape with the help of Jul's Pass Without Trace spell.</p>
+<h3>Areka</h3>
+<p>On the outskirts of Dawn Song's camp, the party rest for the night. Deimos is visited during his watch by a wooden automaton with a black spear. It talks with Deimos, though doesn't appear threatening. Apparently the roc is called Barda, and it warns of Ghosts to the south, and to stay out of the tunnels.</p>
+<h3>The Return of Night Bane</h3>
+<p>During Elmer's watch, Night Bane turns up, limping, draging a broken leg behind them. He has a conversation with Elmer, saying that Kosta killed him from behind, and that he'd come for him. Deimos and Kosta wake, and Night Bane challenges Kosta to a fight. Instead, Kosta talks him down, and then heals him slightly at his request. He leaves to find his partner, claiming that "Vecna is all, and will be all soon".</p>
+<h3>Dawn Song's Camp</h3>
+<p>In the morning, the group confront four figures still at the camp, "Brazen Guard of the Golden Stars, servants to the Undying Mistress". Elmer fireballs them, which sets the camp alight and starts a fight. Defeating the guards and putting the fire out, they find the same books they have a copy of, as well as an updated map of the jungle with more locations marked. There's also an annotated book, <em>The Travels of Magil the Lost, Vol 5: Mauldold, Illwind, and the Jungle</em>. Her notes also show that they had found the helm at a shrine at the bottom of the river. </p>
+<p>Kosta attempts to talk to Pelor for direction, but is blocked by a voice saying "he can't hear you, you're on my land now. She knows where you are now. I've told her." Kosta is overwhelmed by twisting energy pulsing from his eye.</p>
+<h3>Dawn Song the Necrodragon. Again.</h3>
+<p>In the far distance, Qhell sees Dawn Song lift off from the mountains headed towards the group. Deimos puts Kosta in the ball once more, and lifts off to distract her while the others run for the trees. A brief fight in the air comes to an end when Nib casts Dimension Door to pull Deimos out of the dragon's way and disappear into the forest.</p>
+<p>Safe in the trees, they release Kosta from the ball, returned to normal.</p>
+<h3>Don't Smell the Flowers</h3>
+<p>Heading onward through the forest towards a place marked on Dawn Song's map as Fulgrin's Tomb, Kosta stops to sniff some flowers, which turn out to be nasty man-eating plants. Fighting them off, the party have to get creative with methods of removing the corrosive sap from their skin without any water to hand.</p>
+<h3>The Crashed Balloon</h3>
+<p>Further on, they come across a crashed hot air balloon with the skeletons of some elves. Their notes show them to be explorers who had set out long ago to find the lost city of Maudold, and crashed here. Elmer takes a ring, intending to return it to their family one day. There's also a chest there, with an inscription that indicates it can only be opened at midnight. The party bury the elves, and then camp for the night.</p>
+<p>During the night, Qhell is visited by another chwinga like the one that came to Sumunar, which has apparently placed leaves on the graves of the elves. He gives Qhell a ball of twine.</p>
+<p>At midnight, they open the chest and find a load of gems, four spell scrolls, a wand, a red amulet, an old map, and a pair of glowing stones. The amulet is to stop somebody from being magically tracked, and the wand helps find hidden doors and compartments. The stones are teleportation anchors. Holding one stone lets you teleport to either of the other two (of which the group only found one).</p>
+<h3>The Endless</h3>
+<p>Deimos takes a stone, and teleports to the unknown one. He finds himself in a large dusty room, where he is promptly arrested and taken across a large city (Rabbad, later explained by Nib) to talk to The Endless, a tall thin figure with golden skin. He seems to know all about the group, what they have been trying to do, and even talks of the Tabaxi twins sibling, Dusk, who they presume lost. Deimos is given the third stone, and he returns to the others.</p>
+<h3>Furry Creature Fight</h3>
+<p>While Deimos is gone, the others move on through the jungle, where they're set upon by small furry creatures. Just as they manage to fight them off, Qhell scaring a few away as a Black Bear, Deimos pops back into existence with them.</p>
+<h3>Fulgrin's Tomb Entrance</h3>
+<p>More treking through the jungle, and the group eventual stumble on what looks to be the entrance to Fulgrin's Tomb. A pile of stone juts up out of the ground, with a jet black door set in it. The clearing is patrolled by several figures in black armour. Talking with the figures, they are told to leave. They will not let anybody "disturb the imprisonment" and won't say any more. Qhell discerns that they are engraved with binding sigils—something is bound magically within each suit of armour. The group retreat for the night.</p>
+<h3>Areka, Again</h3>
+<p>Before sleep, Elmer studies the books again and finds mention of "a cave of glass behind a door of nothing" in the <strong>Da Dark Under</strong>, as well as "the land of their sleep, a black river of death, a battle with The Night".</p>
+<p>That night, Deimos is once again visited by Areka, who tells him and Elmer that the third cat, Dusk, is beneath the jungle, behind that door, attempting to break open the lock without the rest of the key, which he refers to as the Ashes.</p>
+<hr>
+<p>As night continues, so does our story. The plan for the morning? To get past the guards, through the black door, and down below to Fulgrin's Tomb. Are the party nearing the conclusion of their adventure? Are they walking to certain death, and will they all return? Find out… when we do, and I do another write up!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2022/10/02/relay-fm-for-st-jude/">Relay FM for St. Jude</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/10/02/relay-fm-for-st-jude/" class="post-date">2 October 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+•          <a href="/tags/#apps">Apps</a>
+    </small>
+
+    <p>September is over, and that means the end of another <a href="https://www.cclg.org.uk/ccam">Childhood Cancer Awareness Month</a>. For the last four years, the <a href="https://www.relay.fm/">Relay FM</a> community has used the opportunity to raise money for <a href="https://www.stjude.org/about-st-jude.html?sc_icid=us-mm-missionstatement#mission">St. Jude Children's Research Hospital</a>, an institution dedicated to understanding, treating, and discovering new ways to defeat childhood cancer. Last year, they raised over $700,000. This year, they're set to match that amount again, taking the total raised in the last four years to over $2 million.</p>
+<p>For Stephen, one of the founders of Relay FM, the cause is particularly important. You can read more about his story and why they fundraise over on <a href="https://512pixels.net/2022/08/relay-st-jude-2022/">512pixels.net</a>.</p>
+<p>When the campaign started last year, I had been a part of the <a href="https://relay.fm/membership">Relay FM members Discord</a> for a few months. People were sharing the fundraising total in the Discord in various ways, and a few enterprising individuals came up with a variety of ways to get that total into a iOS Home Screen widget, such as <a href="https://zmknox.com/2021/08/21/building-a-donation-tracker-widget.html">this Scriptable solution by Zach Knox</a>. At the time, I was just starting to play with iOS app development and I thought "we can do better than this. Let's make a native app and widget!"</p>
+<p>A group of us had already gotten together and built a Discord bot for the server, so I had the perfect <a href="https://tildy.dev">group of developers</a> to solicit for help. Together, we built a small app that pulled the campaign information from the Tiltify public API (reverse engineered from <a href="https://tiltify.com/@relay-fm/relay-fm-for-st-jude-2022">their website</a>, rather than the official APIs), displayed it in the app, and provided a widget. It could also pull in the campaign's milestones. We distributed it via TestFlight, so we didn't have to deal with full-on App Review, and it was a great success (amongst Relay FM members, at least).</p>
+<p>It was a brilliant learning experience for me, and greatly increased my knowledge of how a iOS app is built, albeit a very simple one. I am very grateful to all the people who took the time to explain things to me, and review and comment on my code to help me become a better Swift developer.</p>
+<p>This year, we dusted off the app and plugged in the new campaign details a few days before September started, in order to get it up and running again. However, the campaign organisers threw us a last-minute curveball—there wasn't going to be just one campaign this year, but many! Relay would still have their main one, but anybody could set up "subfundraisers", all of which would add towards the overall total. So how was the app going to handle that?</p>
+<p>We spent some time reverse engineering the Tiltify API for the new campaign format, and reworked the app from a simple "here's a widget" to a more full-featured discovery app, showcasing not only the overall total but also each individual fundraiser and their own goals and rewards. We extended the widgets to allow you to choose which fundraiser it should show, provided a variety of appearance options, and added a share screen to let users post pictures of the fundraiser progress on social media.</p>
+<p><img alt="Relay FM for St. Jude iOS App Screenshots" src="/assets/IMG_0929.PNG"></p>
+<p>And of course, we threw in Lock Screen widgets and donation charts for those who'd braved the iOS 16 beta, or regular people upgrading when it was released publicly half way through the month.</p>
+<p>Throughout the project I've learned more about Swift, SwiftUI, and iOS app development than I ever would have working on my own with no real goal in mind. I've learned how to handle the various iPhone and iPad screen sizes, store data locally with GRDB, and use custom intents to provide widgets of all sizes with dynamic options.</p>
+<p>It's been a lot of fun to have a project to work on that's reached so many people (despite never leaving TestFlight!) and helped towards raising the absolutely phenomenal amount that the Relay FM community achieved for St. Jude this year. The app is <a href="https://github.com/Lovely-Development-Team/St-Jude-Widget-App">open source</a>, and we will hopefully be resurrecting it next September when the community comes together once more in the fight against childhood cancer.</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2022/09/29/userdefaults-appstorage-and-data-types/">UserDefaults, @AppStorage, and Data Types</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/09/29/userdefaults-appstorage-and-data-types/" class="post-date">29 September 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+•          <a href="/tags/#apps">Apps</a>
+    </small>
+
+    <p>As I'm starting to play more seriously with iOS app development, Xcode, and Swift, I'm starting to come up with a variety of patterns I use in the various toy apps I mess around with that make working with certain APIs or frameworks easier. One of these is <code>UserDefaults</code>, which provides an easy way to store persistent data between app launches.</p>
+<p>The basic way to interact with <code>UserDefaults</code> is to set values by assigning a data type to a particular key (which are strings), and reading that key later:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Storing a boolean value</span>
+<span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">setValue</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="s">&quot;hasPerformedInitialSync&quot;</span><span class="p">)</span>
+
+<span class="c1">// Retrieving a boolean value</span>
+<span class="kd">let</span> <span class="nv">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">bool</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="s">&quot;hasPerformedInitialSync&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>There are two problems with this, though:</p>
+<ol>
+<li>Using string-based keys is error-prone; it can't be checked by the compiler, so an overlooked typo can lead to unexpected behaviour that's difficult to debug.</li>
+<li>SwiftUI is based around watching state variables for changes, and redrawing views based upon this; how can we tie <code>UserDefaults</code> into that?</li>
+</ol>
+<h2>A <code>UserDefaults</code> extension</h2>
+<p>The first problem is one I've started solving by creating an extension to the <code>UserDefaults</code> class. I put this in a new Swift file (usually <code>Extensions/UserDefaults.swift</code>), with code such as the following:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+    <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">hasPerformedInitialSync</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">{</span>
+        <span class="kr">get</span> <span class="p">{</span> <span class="n">bool</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+        <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This has promoted the previous string-based keys we were using to an <code>enum</code>: the compiler is now able to check our keys for us and produce errors at compile time if we use one we haven't defined. An additional computed property on the <code>UserDefaults</code> class hides the get and set logic from us, so in the rest of our code we need only do the following:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Storing a boolean value</span>
+<span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="kc">true</span>
+
+<span class="c1">// Retrieving a boolean value</span>
+<span class="kd">let</span> <span class="nv">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span>
+</code></pre></div>
+
+<p>Hurray! No more string-based keys to remember. But what about the second problem?</p>
+<p>Up until recently, I was syncing <code>UserDefaults</code> changes with SwiftUI view state by storing a related <code>@State</code> variable, and tying it to the corresponding <code>UserDefaults</code> key using <code>onAppear</code> and <code>onChange(of:)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">ContentView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+  <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">NavigationView</span> <span class="p">{</span>
+      <span class="c1">// View code</span>
+      <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="kc">true</span>
+      <span class="p">})</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Sync Done!&quot;</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onAppear</span> <span class="p">{</span>
+      <span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onChange</span><span class="p">(</span><span class="n">of</span><span class="p">:</span> <span class="err">$</span><span class="n">hasPerformedInitialSync</span><span class="p">)</span> <span class="p">{</span> <span class="n">newValue</span> <span class="k">in</span>
+      <span class="n">UserDefaults</span><span class="p">.</span><span class="n">standard</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span> <span class="p">=</span> <span class="n">newValue</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This works by fetching the value stored in <code>UserDefaults</code> when the view first appears and assigning it to the state variable, and then watching the state variable for changes, and syncing those back to the <code>UserDefaults</code> key. But there are still problems with this:</p>
+<ol>
+<li>It's easy to forget to add the required line to <code>onAppear</code> or the <code>onChange</code> handler for a new variable.</li>
+<li>The view won't react to changes that happen to the <code>UserDefaults</code> key outside of its own interaction, such as if a presented sheet changes the value.</li>
+</ol>
+<p>Fortunately, SwiftUI introduced a new property wrapper similar to <code>@State</code> to help us with this.</p>
+<h2>Introducing <code>@AppStorage</code></h2>
+<p>Called <code>@AppStorage</code>, the new property wrapper lets you reference a <code>UserDefaults</code> key directly and bind it to a variable that will automatically sync changes between itself and <code>UserDefaults</code>. It can be used as such:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">ContentView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+  <span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">hasPerformedInitialSync</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">hasPerformedInitialSync</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="c1">// View code</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Note that there's no longer any need for the value to be read <code>onAppear</code>, or the changes to be observed using <code>onChange</code>. SwiftUI will take care of that for us, automatically syncing data back when actions within the view change the state variable's value. Very handy!</p>
+<h2>Supported Data Types</h2>
+<p>However, there are still limitations with this approach, one of which I ran into today and was banging my head against for quite some time until I realised the issue.</p>
+<p><code>UserDefaults</code> supports the storage of <a href="https://developer.apple.com/documentation/foundation/userdefaults">a variety of primitive data types</a>:</p>
+<ul>
+<li>Boolean</li>
+<li>String</li>
+<li>Integer</li>
+<li>Data</li>
+<li>URL</li>
+<li>Double</li>
+<li>Float</li>
+</ul>
+<p>It also supports storing arrays or dictionaries containing these primitive types, using the <code>array(forKey:)</code>, <code>stringArray(forKey:)</code>, and <code>dictionary(forKey:)</code> methods. <code>AppStorage</code>, however, does not support this. Apple's <a href="https://developer.apple.com/documentation/swiftui/appstorage">documentation for <code>AppStorage</code></a> lists the <code>init</code> methods available, and they can return:</p>
+<ul>
+<li>String</li>
+<li>Integer</li>
+<li>Data</li>
+<li>URL</li>
+<li>Double</li>
+<li>Boolean</li>
+</ul>
+<p>It's missing <code>Float</code>—I didn't care about that—and the <code>Array</code> and <code>Dictionary</code> methods—I <em>did</em> care about those. I had created my <code>UserDefaults</code> extension, as normal:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+    <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">favouriteColours</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nv">favouriteColours</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">]</span> <span class="p">{</span>
+        <span class="kr">get</span> <span class="p">{</span> <span class="n">stringArray</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">??</span> <span class="p">[]</span> <span class="p">}</span>
+        <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>That worked fine, as expected. But when I tried to use it with <code>@AppStorage</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">favouriteColours</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">favouriteColours</span><span class="p">:</span> <span class="p">[</span><span class="nb">String</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span>
+</code></pre></div>
+
+<p>the compiler threw up the error <code>No exact matches in call to initializer</code>. Helpful. It turns out that's because of the lack of support for the collection methods, and I had to resort to using my original <code>onAppear</code>/<code>onChange</code> workaround.</p>
+<h2>It's not all bad, though!</h2>
+<p>Despite this frustrating limitation with <code>AppStorage</code> (which I hope is fixed in a future SwiftUI release), I really like the <code>UserDefaults</code> extension method for working with the API. There's two more things I want to mention about it. One, it can be used to store or return any data type, as long as you can easily convert it to or from one of the supported types. For example, storing a custom <code>enum</code> is easy. Make the <code>enum</code> inherit from <code>Int</code> or <code>String</code>, and you're off to the races:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="nc">Mode</span><span class="p">:</span> <span class="nb">Int</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">light</span>
+  <span class="k">case</span> <span class="n">dark</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+  <span class="kd">enum</span> <span class="nc">Key</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">preferredMode</span>
+  <span class="p">}</span>
+  <span class="kd">var</span> <span class="nv">preferredMode</span><span class="p">:</span> <span class="n">Mode</span> <span class="p">{</span>
+    <span class="kr">get</span> <span class="p">{</span> <span class="n">Mode</span><span class="p">(</span><span class="n">rawValue</span><span class="p">:</span> <span class="n">integer</span><span class="p">(</span><span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.,</span><span class="n">rawValue</span><span class="p">))</span> <span class="p">??</span> <span class="p">.</span><span class="n">light</span> <span class="p">}</span>
+    <span class="kr">set</span> <span class="p">{</span> <span class="n">setValue</span><span class="p">(</span><span class="n">newValue</span><span class="p">.</span><span class="n">rawValue</span><span class="p">,</span> <span class="n">forKey</span><span class="p">:</span> <span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.</span><span class="n">rawValue</span><span class="p">)</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Secondly, if you want to be able to access the data you're storing in other targets, such as a widget, the extension is a great place to create a static property that uses a group identifier:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">UserDefaults</span> <span class="p">{</span>
+  <span class="kd">static</span> <span class="kd">let</span> <span class="nv">shared</span> <span class="p">=</span> <span class="n">UserDefaults</span><span class="p">(</span><span class="n">suiteName</span><span class="p">:</span> <span class="s">&quot;group.com.myapp.AppName&quot;</span><span class="p">)</span><span class="o">!</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Accessing <code>UserDefaults.shared</code> instead of <code>UserDefaults.standard</code> will allow it to be read and written from any targets that have access to the specified group identifier. Additionally, SwiftUI provides two different ways of specifying that you want to use <code>.shared</code> instead of <code>.standard</code>. It can be done on a per-variable basis by passing the <code>store:</code> parameter to <code>@AppStorage</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">AppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">Key</span><span class="p">.</span><span class="n">preferredMode</span><span class="p">.</span><span class="n">rawValue</span><span class="p">,</span> <span class="n">store</span><span class="p">:</span> <span class="n">UserDefaults</span><span class="p">.</span><span class="n">shared</span><span class="p">)</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">preferredMode</span><span class="p">:</span> <span class="n">Mode</span> <span class="p">=</span> <span class="p">.</span><span class="n">light</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Or it can be made the default for all child views within a hierarchy:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">MyApp</span><span class="p">:</span> <span class="n">App</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">Scene</span> <span class="p">{</span>
+        <span class="n">WindowGroup</span> <span class="p">{</span>
+            <span class="n">ContentView</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">defaultAppStorage</span><span class="p">(</span><span class="n">UserDefaults</span><span class="p">.</span><span class="n">shared</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Both of which make working with <code>UserDefaults</code> cross-application much easier.</p>
+<p>Anyway, I'm mostly writing this down so that the next time I'm struggling with it I can prompt myself on how it works and why I've done things a certain way; but maybe it can help you, too!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/79601">Review: 71408 Princess Peach's Castle</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/09/11/review-71408-princess-peachs-castle/" class="post-date">11 September 2022</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>My final review of this year's new Princess Peach-themed Super Mario LEGO sets, this time for <a href="https://brickset.com/sets/71408-1/Princess-Peach-s-Castle">Peach's Castle</a>:</p>
+<blockquote>
+<p><a href="https://brickset.com/sets/71408-1/Princess-Peach-s-Castle">71408</a> Princess Peach's Castle is the largest of the Peach-themed additions to the Super Mario line this year, and is in fact the largest of all the game's sets so far at 1,216 parts. It includes a variety of characters, both new to the range and returning, and commands some impressive space when laid out ready to play. Let's take a look at what's inside!</p>
+</blockquote>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://brickset.com/article/79600/review-71407-cat-peach-suit-and-frozen-tower">Review: 71407 Cat Peach Suit and Frozen Tower</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/08/05/review-71407-cat-peach-suit-and-frozen-tower/" class="post-date">5 August 2022</a>
+• <a href="/categories/#lego-reviews">LEGO Reviews</a>    </small>
+
+    <p>I took look at <a href="https://brickset.com/article/79600/review-71407-cat-peach-suit-and-frozen-tower">another one</a> of the Princess Peach-themed Super Mario LEGO sets that were released at the start of August:</p>
+<blockquote>
+<p>There's no doubt that this set is visually striking - it has an impressive height, bright colours, and a baddie flying around on a broomstick. It's also great to see a costume change for Peach introduced already (and I'm glad that the other characters can use it too—although Luigi did need a software update in order to understand).</p>
+</blockquote>
+<p>One more to go in this batch of reviews!</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+        <a href="https://sixcolors.com/post/2022/07/get-universal-times-into-discord-and-elsewhere/">Elsewhen 1.5: Time Zones, Translated</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/07/28/elsewhen-15-time-zones-translated/" class="post-date">28 July 2022</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#apps">Apps</a>
+    </small>
+
+    <p>We've recently released <a href="https://tildy.dev/elsewhen">Elsewhen</a> 1.5, a time zone app that I develop with a group of friends. Jason Snell featured it over at <a href="https://sixcolors.com/post/2022/07/get-universal-times-into-discord-and-elsewhere/">Six Colors</a>:</p>
+<blockquote>
+<p>One app that can help is <a href="https://apps.apple.com/app/elsewhen/id1588708173">Elsewhen</a> from <a href="https://tildy.dev/">The Lovely Developers</a>, a fun group that sprung out of the Relay FM Discord. Elsewhen lets you quickly set a date and time and then translate it — either into a bunch of human-readable time zones, or into Discord’s time-code format.</p>
+</blockquote>
+<p><img alt="" src="/assets/elsewhen.png"></p>
+<p>The latest version not only showcases a brand new UI and the ability to create and save groups of time zones, but also brings it to the Mac for the first time. If you ever have the need to share a given time in a multitude of time zones around the world, or are part of an iternational Discord community where their time codes feature comes in handy, <a href="https://apps.apple.com/app/elsewhen/id1588708173">give it a whirl</a>. It's been a blast working on it.</p>
+
+  </div>  <div class="post ">
+
+    <h1>
+          <a href="/2022/07/26/my-dd-adventures/">My D&D Adventures</a>
+    </h1>
+    <small class="text-secondary">
+      <a href="/2022/07/26/my-dd-adventures/" class="post-date">26 July 2022</a>
+• <a href="/categories/#dd">D&D</a>    </small>
+
+    <p>When I first got into D&amp;D a year or so ago, I created my first character for a play-by-post (PbP) game called <em>The Lost Jungles of Rabbad</em>. Since then, I've joined other PbP games, played a few live one-shots (via video call), starting running my own PbP game with a pre-rolled adventure from D&amp;D Beyond, fought other players in two player-vs-player (PvP) arenas, and play-tested a couple of new campaign ideas from our DM.</p>
+<p>I hope to write more about my characters in the future, but here's a summary of the games so far.</p>
+<ul>
+<li><strong>The Lost Jungles of Rabbad</strong>: PbP, playing as <em>Elmer Raloren</em>, a noble-born High Elf Wizard (School of Abjuration). Currently at level 6. A homebrew adventure run by our DM, Rob, in a world of his design. I wrote a <a href="/2022/07/07/the-lost-jungles-of-rabbad/">summary of this campaign</a> previously.</li>
+<li><strong>A Darkness Gathering</strong>: PbP, playing as <em>Dagoth the Ancient</em>, a Bugbear Paladin (Oath of the Ancients). Currently at level 5. A campaign that a first-time-DM, Jake, has adapted from an old 2e adventure, I believe. It started out as <em><a href="https://www.dndbeyond.com/sources/wa/frozen-sick">Frozen Sick</a></em>, a free sourcebook on D&amp;D Beyond, which the players quickly completed and Jake transitioned.</li>
+<li><strong>The Princess Bride</strong>: PbP, playing as <em>Stardust Nightwhisper</em>, a Fairy Bard. Currently at level 3. The game was conceived of and run by Nic, who had to put it on pause after he and his wife had a baby! Star, as my character was known by, is waiting patiently for when the game resumes and I can play a bard once more!</li>
+<li><strong>The Wave Walker</strong>: PbP, playing as <em>Kaith</em>, an irritable Aarakocra Monk. Currently at level 2, the game was started by another first-time DM, Madi, in a world of her own creation. She ended up not having the time to continue it, so it is currently on haitus, but hopefully will return!</li>
+<li><strong>The Wave Walker: Windborn Demons</strong>: Although Madi didn't have the time to full a full-blown campaign, she plans to run a series of smaller one-shots for characters in the <em>Wave Walker</em> world, starting with Kaith. The game has only just begun, but I am excited because I was enjoying roleplaying Kaith's surly demeanour, and am looking forward to attempting to play a monk in combat.</li>
+<li><strong>Winter's Crest</strong>: A live playtest of a winter-themed one-shot campaign Rob was writing, playing as <em>Peregrin Puddlefoot</em>, a Halfling Bard, at level 5. The campaign was very fun, and we were successful as a party—although there were definitely times it felt like we weren't going to be!</li>
+<li><strong>The Dragon of Icespire Peak</strong>: PbP, where I'm the DM! A pre-rolled <a href="https://www.dndbeyond.com/sources/doip">adventure on D&amp;D Beyond</a>, I'm having a lot of fun making it my own. The characters are currently at level 3, though they chickened out of completing the latest job, which would have earned them a level bump. One of them was bitten by a Wererat, so they're currently distracted by that.</li>
+<li><strong>The Hawkstone Alliance</strong>: A series of live games played in Rob's world, with a rotating set of players each time. Playing as <em>Tabasco</em>, a level 4 Tabaxi Artificer (Alchemist), I've currently been involved in two adventures so far of the four that have been played.</li>
+<li><strong>The Pit: The Isle of Death</strong>: A PbP PvP game, playing <em>Olrim</em>, a level 10 Fallen Aasimar Paladin Oathbreaker. There were five others in the game, and Olrim ultimately came second, and was <em>so close</em> to beating Skulkas!</li>
+<li><strong>The Pit: The Temple of the Light</strong>: The second PbP PvP game, this time playing <em>Kolasi</em>, a multiclassing Zariel Tiefling - level 3 Rogue, level 7 Paladin. This is my first attempt at multiclassing, and I find level 10 pretty difficult to work with (there are so many options). We're working in pairs this time, but it's not going particularly well for Kolasi or his team mate - somebody brought a pack of bears and a dragon to the fight, which was terribly unfair of them!</li>
+</ul>
+<p>We're also playtesting a new campaign idea from Rob, which I won't say much about other than it's not D&amp;D-based this time, but uses fate dice. In the first playthrough I played as <em>Kalamae, Goddess of Life and Destiny, Mother of Creation, Watcher of the Sands</em>, and in the second (currently in-progress) as <em>Sa'khuna, God of the Night and the Underworld, Lord of Darkness, Keeper of the Keys.</em> It's a lot of fun!</p>
+<p>One of the most fun aspects of character creation is their visual design, and <a href="https://www.heroforge.com/">Hero Forge</a> is a fantastic place to get inspiration and build colourful 3D models. You can even buy them as STL files or 3D printed figures for your in-person games, though I haven't done that yet. Here's what all my characters look like:</p>
+<p><img alt="Hero Forge designs of my characters" src="/assets/heroes.png"></p>
+<p>I never realised that D&amp;D could be as fun as all this. I have found a fantastic group of people to play with and seeing everybody's creativity is truly amazing.</p>
+
+  </div>
+<div class="pagination mb-5 d-flex justify-content-between">
+
+    <a href="/index3.html">← Older</a>
+
+
+    <a href="/index.html">Newer →</a>
+
+</div>
+
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

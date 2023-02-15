@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>SwiftUI: Equal Width Icons • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="SwiftUI: Equal Width Icons">
+<meta property="og:description" content="Following on from my previous post on SwiftUI Text alignment, I thought I'd post about another common issue I run into and how to solve it relatively simply: equal width icons. This logic applies to any series of Views you want to display equally in either height or width, but …">
+<meta property="og:url" content="/2023/02/02/swiftui-equal-width-icons/">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="/assets/swiftui-equal/fixed.png">
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          SwiftUI: Equal Width Icons
+    </h1>
+    <small class="text-secondary">
+      <a href="/2023/02/02/swiftui-equal-width-icons/" class="post-date">2 February 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>Following on from my previous post on <a href="/2023/01/25/swiftui-text-views-and-alignment/">SwiftUI Text alignment</a>, I thought I'd post about another common issue I run into and how to solve it relatively simply: equal width icons. This logic applies to any series of Views you want to display equally in either height or width, but the most common place it occurs in my own code is when using SF Symbols. Each symbol has its own width, so when using them as bullets or in other situations where you want them to line up it can be infuriating.</p>
+<p>Let's set the stage with some code. The example I'm using is the ubiquitous "What's New" sheet, found in many of Apple's own apps. I've borrowed the text and icons from the latest update to <a href="https://www.penedex.com/">Penedex</a>, a pen-tracking app developed by Connor Rose. Here's the sample View:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">EqualWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">yellow</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">blue</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Brand List Fix&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">red</span><span class="p">)</span>
+                <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">)</span>
+                        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                    <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+            <span class="p">}</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>A series of repeated sections (don't worry, it'll be much neater by the end of the post), each with an icon, a title and a short summary. It makes use of the <code>fullWidth()</code> modifier from my <a href="/2023/01/25/swiftui-text-views-and-alignment/">previous post</a>. This is how iOS renders it:</p>
+<p><img alt="" src="/assets/swiftui-equal/initial.png"></p>
+<p>As a starter for ten, this is pretty good! But the scroll icon is wider than the previous two, and the ladybird icon even wider still. This pushes the text out to the right and it no longer lines up. We could manually define a width for the icon:</p>
+<div class="highlight"><pre><span></span><code><span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>(From now on, I'm only going to show the code for one of the four sections. The others are identical in all but the content.)</p>
+<p>Yay, that works!</p>
+<p><img alt="" src="/assets/swiftui-equal/manual-width.png"></p>
+<p>But it's a bit of a "magic number", and one that would likely need to be tweaked should you change the icons at a later date. Not to mention that it just won't scale with the icon if the user adjusts the text size on their iOS device. We can do better than that.</p>
+<p>There's three parts to the solution. We need to:</p>
+<ul>
+<li>read the width of each icon,</li>
+<li>store the maximum of those widths somewhere, and</li>
+<li>set the width of each icon to that maximum.</li>
+</ul>
+<p>Let's take these one at a time.</p>
+<h4>Read the width of each icon</h4>
+<p>This is easily achieved using a <code>GeometryReader</code>. I have a bit of a love/hate relationship with this SwiftUI utility, but in this case it works very well. Appyling it as a background to the icon means it will grow to match the size of the icon's view, and we can read the frame's size:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="c1">// geo.size.width is the width of the icon</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>But what we can do with that value?</p>
+<h4>Store the maximum width</h4>
+<p>In order to calculate the maximum, we need a couple of things. We need a State variable for the max icon width, and let's give it a sensible default:</p>
+<div class="highlight"><pre><span></span><code><span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
+</code></pre></div>
+
+<p>And we need a way to accumulate the values read by each <code>GeometryReader</code> and take the maximum for our <code>iconWidth</code> variable. SwiftUI provides us with just the thing: a <a href="https://developer.apple.com/documentation/swiftui/preferencekey"><code>PreferenceKey</code></a>. This is a strange bit of SwiftUI that allows us to combine a number of values into a single one, and store it somewhere. First, we need to define a custom <code>PreferenceKey</code>, with a <code>reduce</code> function that returns the maximum of the values it is passed. I like to do this on an extension of the main view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kd">extension</span> <span class="nc">EqualWidthIcons</span> <span class="p">{</span>
+    <span class="kd">struct</span> <span class="nc">IconWidthPreferenceKey</span><span class="p">:</span> <span class="n">PreferenceKey</span> <span class="p">{</span>
+        <span class="kd">static</span> <span class="kd">let</span> <span class="nv">defaultValue</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">0</span>
+        <span class="kd">static</span> <span class="kd">func</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="kr">inout</span> <span class="n">CGFloat</span><span class="p">,</span> <span class="n">nextValue</span><span class="p">:</span> <span class="p">()</span> <span class="p">-&gt;</span> <span class="n">CGFloat</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">value</span> <span class="p">=</span> <span class="bp">max</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">nextValue</span><span class="p">())</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The code here is a little odd, but the important part is the call to <code>max</code>, setting the <code>value</code> variable to the maximum of either what it was before, or the value it has just been passed (the result of the <code>nextValue()</code> call).</p>
+<p>Now we need to use this <code>PreferenceKey</code> in our <code>GeometryReader</code>. To do so, we have to call <code>.preference(key:value:)</code> on a View. We can place an invisible view in the <code>GeometryReader</code> and use it there:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<p>Applying this to each icon will propagate the maxiumum size up into our <code>EqualWidthIcons.IconWidthPreferenceKey</code>.</p>
+<h4>Set the width of each icon</h4>
+<p>Now all that's left is to set the width of each icon to that maximum. Remember the State variable we created for it previously? We can watch for changes to the <code>PreferenceKey</code> and update it accordingly. I like to do this on the highest view in the hierarchy, the immediate one returned by <code>body</code> (in this case, that's the outer <code>VStack</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="n">VStack</span> <span class="p">{</span>
+        <span class="c1">// Rest of view...</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">onPreferenceChange</span><span class="p">(</span><span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+        <span class="kc">self</span><span class="p">.</span><span class="n">iconWidth</span> <span class="p">=</span> <span class="n">value</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Finally, update each icon to use this value as its width. It's important that we set the frame <em>after</em> the <code>GeometryReader</code> background.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">green</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<p>And voila! Each icon has the same width, and will scale along with dynamic type as specified by the user.</p>
+<p><img alt="" src="/assets/swiftui-equal/fixed.png"></p>
+<h4>Cleaning up</h4>
+<p>This works great, but we have a fair bit of duplicated code. We did already, but since we've added the <code>background</code>, <code>GeometryReader</code>, and <code>frame</code> definitions, the sections have become fairly unwieldy. It's probably time we split it out into its own view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewSection</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">HStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+                    <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+                        <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+<span class="c1">//              How do we read the iconWidth here?</span>
+<span class="c1">//              .frame(width: iconWidth)</span>
+            <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This dramatically reduces the size of the original view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">EqualWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span> <span class="p">=</span> <span class="mi">20</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">green</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">blue</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Brand List Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+            <span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">red</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+        <span class="p">.</span><span class="n">onPreferenceChange</span><span class="p">(</span><span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">value</span> <span class="k">in</span>
+            <span class="kc">self</span><span class="p">.</span><span class="n">iconWidth</span> <span class="p">=</span> <span class="n">value</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>But you may have noticed the question in the comments in the <code>WhatsNewSection</code> code: where do we read <code>iconWidth</code> from now?</p>
+<p>We have to pass it down as a binding from the parent view:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewSection</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="p">@</span><span class="n">Binding</span> <span class="kd">var</span> <span class="nv">iconWidth</span><span class="p">:</span> <span class="n">CGFloat</span>
+    <span class="c1">// Rest of view... </span>
+</code></pre></div>
+
+<p>Read it as usual to set the icon's frame:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">background</span> <span class="p">{</span>
+        <span class="n">GeometryReader</span> <span class="p">{</span> <span class="n">geo</span> <span class="k">in</span>
+            <span class="n">Color</span><span class="p">.</span><span class="n">clear</span><span class="p">.</span><span class="n">preference</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="n">EqualWidthIcons</span><span class="p">.</span><span class="n">IconWidthPreferenceKey</span><span class="p">.</span><span class="kc">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">geo</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">.</span><span class="n">frame</span><span class="p">(</span><span class="n">width</span><span class="p">:</span> <span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<p>And finally, pass the binding through from the main view:</p>
+<div class="highlight"><pre><span></span><code><span class="n">WhatsNewSection</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">,</span> <span class="n">iconWidth</span><span class="p">:</span> <span class="err">$</span><span class="n">iconWidth</span><span class="p">)</span>
+</code></pre></div>
+
+<h3>A better alternative</h3>
+<p>For this particular situation, we can actually do away with the <code>PreferenceKey</code> entirely, if we switch our layout to using a <code>Grid</code>. Grids automatically size the width of their columns based on the widest cell within the column, which is exactly what we want. Here's a verison of the code using <code>Grid</code> instead:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">WhatsNewGridRow</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nv">icon</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">iconColor</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="kd">let</span> <span class="nv">title</span><span class="p">:</span> <span class="nb">String</span>
+    <span class="kd">let</span> <span class="nv">summary</span><span class="p">:</span> <span class="nb">String</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">GridRow</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="n">icon</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">title</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(</span><span class="n">iconColor</span><span class="p">)</span>
+            <span class="n">VStack</span><span class="p">(</span><span class="n">alignment</span><span class="p">:</span> <span class="p">.</span><span class="n">leading</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">headline</span><span class="p">)</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">fullWidth</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="kd">struct</span> <span class="nc">GridWidthIcons</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">VStack</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">VStack</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;What&#39;s New!&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">font</span><span class="p">(.</span><span class="n">largeTitle</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">bold</span><span class="p">()</span>
+                <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Version 2023.01&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="p">.</span><span class="n">padding</span><span class="p">(.</span><span class="n">bottom</span><span class="p">)</span>
+
+            <span class="n">Grid</span><span class="p">(</span><span class="n">horizontalSpacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="n">verticalSpacing</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;star.circle.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Star Ratings Toggle&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;If you believe all your pens are your favourite, you can now turn off star ratings via Settings.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;square.and.arrow.up.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">green</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Share Sheet Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed an issue where the date in your Currently Ink&#39;d shared image would not display correctly.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;scroll.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">blue</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Brand List Fix&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Fixed issues with duplicate brands populating your Brand List.&quot;</span><span class="p">)</span>
+                <span class="n">WhatsNewGridRow</span><span class="p">(</span><span class="n">icon</span><span class="p">:</span> <span class="s">&quot;ladybug.fill&quot;</span><span class="p">,</span> <span class="n">iconColor</span><span class="p">:</span> <span class="p">.</span><span class="n">red</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s">&quot;Misc. Bug Fixes&quot;</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="s">&quot;Plenty of other minor improvements.&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="n">Spacer</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">padding</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The result is identical, with a little less code a lot less complexity. However, there are still some situations where you want icons or other views to match widths or heights but a grid isn't appropriate—there may be other content between the views, for example, that you don't want conforming to a grid—so the <code>PreferenceKey</code> method is still valuable to know.</p>
+<p>The full code for both solutions can be found <a href="https://gist.github.com/benbacardi/4df235736f03cd4cda5cc32d828a9298">on Github</a>.</p>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>

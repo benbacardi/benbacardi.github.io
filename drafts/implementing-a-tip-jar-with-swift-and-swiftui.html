@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+
+    <title>Implementing a Tip Jar with Swift and SwiftUI • Ben Cardy</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Ben Cardy">
+
+
+<meta property="og:title" content="Implementing a Tip Jar with Swift and SwiftUI">
+<meta property="og:description" content="Pressured by friends, I recently added a tip jar to Pendulum, the pen pal tracking app I develop with my friend Alex. It's implemented (like the rest of the app) in pure SwiftUI, and uses the newer StoreKit 2 APIs to communicate with Apple to fetch the IAP information and …">
+<meta property="og:url" content="drafts/implementing-a-tip-jar-with-swift-and-swiftui.html">
+<meta property="og:site_name" content="Ben Cardy">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="">
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@benbacardi" />
+<meta name="twitter:creator" content="@benbacardi" />
+
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jockey+One|Roboto:400,400italic,700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/feed.xml">
+
+  </head>
+
+
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">Ben Cardy</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-link" href="/pendulum/">Pendulum</a></li>
+          <li class="nav-item"><a class="nav-link " href="/archive/">Archive</a></li>
+          <li class="nav-item"><a class="nav-link " href="/categories/">Categories</a></li>
+          <li class="nav-item"><a class="nav-link " href="/tags/">Tags</a></li>
+
+        </ul>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+
+  <div class="post single-post">
+
+    <h1>
+          Implementing a Tip Jar with Swift and SwiftUI
+    </h1>
+    <small class="text-secondary">
+      <a href="drafts/implementing-a-tip-jar-with-swift-and-swiftui.html" class="post-date">11 February 2023</a>
+• <a href="/categories/#development">Development</a>        •
+          <a href="/tags/#swift">Swift</a>
+    </small>
+
+    <p>Pressured by friends, I recently added a tip jar to <a href="/pendulum/">Pendulum</a>, the pen pal tracking app I develop with my friend <a href="https://418teapot.net">Alex</a>. It's implemented (like the rest of the app) in pure SwiftUI, and uses the newer <a href="https://developer.apple.com/storekit/">StoreKit 2</a> APIs to communicate with Apple to fetch the IAP information and make purchases. This is a write of how I muddled through the process, from start to finish.</p>
+<h2>Defining the tip IAPs</h2>
+<p>The first step is to head into <a href="https://appstoreconnect.apple.com">App Store Connect</a> and define the IAPs for each of the tips you want to offer. In my case, I knew what I wanted the tips to be called, in ascending order of price, but not exactly what price each would be. That doesn't matter for now, though. I had the following in mind, amusingly named after fountain pen nib sizes:</p>
+<ul>
+<li>Extra Fine Tip</li>
+<li>Fine Tip</li>
+<li>Medium Tip</li>
+<li>Broad Tip</li>
+<li>Stub Tip</li>
+</ul>
+<p>To create these in App Store Connect, I headed to the <strong>In-App Purchases</strong> section under <strong>Features</strong> on the app's <strong>App Store</strong> tab. There, I could create each tip using the plus button. The initial form has three fields:</p>
+<ul>
+<li><strong>Type</strong>: either <em>Consumable</em> or <em>Non-Consumable</em>. I didn't know what these are, and had to look them up: consumable IAPs are those that can be purchased multiple times by the user (for things such as in-game currency), and non-consumable IAPs can only be purchased once (for features such as unlocking a premium mode of the app). For a tip jar, I wanted the former.</li>
+<li><strong>Reference Name</strong>: a name for the IAP, solely for your own use. It doesn't appear anywhere public; for ease, I entered the names I'd chosen for the tips above.</li>
+<li><strong>Product ID</strong>: a unique identifier for the IAP. I wasn't sure <em>how</em> unique this was meant to be, so to be on the safe side I went for the usual Apple-style of defining them as reversed-DNS bundle identifiers. For example, <code>uk.co.bencardy.Pendulum.ExtraFineTip</code>, etc.</li>
+</ul>
+<p>Once created, to complete the IAP you need to define a few extra fields that aren't present on the initial form, such as the Price Schedule (where you set the cost of the IAP, using Apple's price tiers), and the App Store Localization, where you define how the tip appears (its name and description) in the App Store for each language. I defined only "English (U.K.)" which is all the app is offered in.</p>
+<h2>Defining the tips in Swift</h2>
+<p>StoreKit2 doesn't have an API to fetch all the IAPs associated with an app; instead, you need to request specific Product IDs known by the app ahead of time. To this end, I decided it would be best to represent the available tips in the app with an <code>enum</code>, based off their unique IDs:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">enum</span> <span class="nc">TipJar</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span> <span class="n">CaseIterable</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">extraFine</span> <span class="p">=</span> <span class="s">&quot;uk.co.bencardy.Pendulum.ExtraFineTip&quot;</span>
+    <span class="k">case</span> <span class="n">fine</span> <span class="p">=</span> <span class="s">&quot;uk.co.bencardy.Pendulum.FineTip&quot;</span>
+    <span class="k">case</span> <span class="n">medium</span> <span class="p">=</span> <span class="s">&quot;uk.co.bencardy.Pendulum.MediumTip&quot;</span>
+    <span class="k">case</span> <span class="n">broad</span> <span class="p">=</span> <span class="s">&quot;uk.co.bencardy.Pendulum.BroadTip&quot;</span>
+    <span class="k">case</span> <span class="n">stub</span> <span class="p">=</span> <span class="s">&quot;uk.co.bencardy.Pendulum.StubTip&quot;</span>
+
+    <span class="kd">var</span> <span class="nv">name</span><span class="p">:</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="kc">self</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="p">.</span><span class="n">extraFine</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Extra Fine&quot;</span>
+        <span class="k">case</span> <span class="p">.</span><span class="n">fine</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Fine&quot;</span>
+        <span class="k">case</span> <span class="p">.</span><span class="n">medium</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Medium&quot;</span>
+        <span class="k">case</span> <span class="p">.</span><span class="n">broad</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Broad&quot;</span>
+        <span class="k">case</span> <span class="p">.</span><span class="n">stub</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;Stub&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>I made the <code>enum</code> conform to <code>CaseIterable</code>, meaning I can iterate over <code>TipJar.allCases</code> to display all available tips in the SwiftUI view. This I did inside my <code>TipJarView</code>, wrapping each tip in a button and displaying some placeholder information about each one:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">TipJarView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">List</span> <span class="p">{</span>
+            <span class="n">ForEach</span><span class="p">(</span><span class="n">TipJar</span><span class="p">.</span><span class="n">allCases</span><span class="p">,</span> <span class="n">id</span><span class="p">:</span> <span class="err">\</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">tip</span> <span class="k">in</span>
+                <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{})</span> <span class="p">{</span>
+                    <span class="n">HStack</span> <span class="p">{</span>
+                        <span class="n">Text</span><span class="p">(</span><span class="n">tip</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">primary</span><span class="p">)</span>
+                        <span class="n">Spacer</span><span class="p">()</span>
+                        <span class="n">Text</span><span class="p">(</span><span class="s">&quot;£??&quot;</span><span class="p">)</span>
+                            <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">accentColor</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">navigationTitle</span><span class="p">(</span><span class="s">&quot;Support Pendulum&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This presented a list of the available tips, with a place for me to put their prices (once known), and a button to purchase the tip (functionality yet to be completed):</p>
+<h2>Fetching IAP information with StoreKit 2</h2>
+<p>The next step was to actually fetch the prices I had defined in App Store Connect within the app, and display them. For this, I needed to use Apple's <a href="https://developer.apple.com/storekit/">StoreKit 2</a> APIs. The particular one I'm interested in here is <a href="https://developer.apple.com/documentation/storekit/product/3851116-products"><code>Product.products(for:)</code></a>, which returns an array of <code>Product</code> objects for each ID passed in. I decided to add a static method to the <code>TipJar</code> enum to call this with all my IAP IDs, and return a mapping of <code>[TipJar: Product]</code> that the view could use. The new StoreKit 2 APIs are all asyncronous, so my function needed to be to:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">import</span> <span class="nc">StoreKit</span>
+
+<span class="kd">extension</span> <span class="nc">TipJar</span> <span class="p">{</span>
+    <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fetchProducts</span><span class="p">()</span> <span class="k">async</span> <span class="p">-&gt;</span> <span class="p">[</span><span class="kc">Self</span><span class="p">:</span> <span class="n">Product</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nv">products</span> <span class="p">=</span> <span class="k">try</span> <span class="k">await</span> <span class="n">Product</span><span class="p">.</span><span class="n">products</span><span class="p">(</span><span class="k">for</span><span class="p">:</span> <span class="kc">Self</span><span class="p">.</span><span class="n">allCases</span><span class="p">.</span><span class="bp">map</span> <span class="p">{</span> <span class="nv">$0</span><span class="p">.</span><span class="n">rawValue</span> <span class="p">})</span>
+            <span class="kd">var</span> <span class="nv">results</span><span class="p">:</span> <span class="p">[</span><span class="kc">Self</span><span class="p">:</span> <span class="n">Product</span><span class="p">]</span> <span class="p">=</span> <span class="p">[:]</span>
+            <span class="k">for</span> <span class="n">product</span> <span class="k">in</span> <span class="n">products</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="kd">let</span> <span class="nv">type</span> <span class="p">=</span> <span class="n">TipJar</span><span class="p">(</span><span class="n">rawValue</span><span class="p">:</span> <span class="n">product</span><span class="p">.</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">type</span><span class="p">]</span> <span class="p">=</span> <span class="n">product</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">results</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+            <span class="n">storeLogger</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not fetch products: </span><span class="si">\(</span><span class="n">error</span><span class="p">.</span><span class="n">localizedDescription</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[:]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>(I am sure there is a more concise way to compile the dictionary, but those are the kinds of Swift tricks I am not yet proficient enough in the language to be able to come up with when I need them, so a simple for loop had to suffice here.)</p>
+<p>With this extension in place, I can add a new <code>State</code> variable to my view, and fetch the product information when the view is loaded:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">TipJarView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">tipJarPrices</span><span class="p">:</span> <span class="p">[</span><span class="n">TipJar</span><span class="p">:</span> <span class="n">Product</span><span class="p">]</span> <span class="p">=</span> <span class="p">[:]</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">List</span> <span class="p">{</span>
+            <span class="p">...</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">task</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nv">products</span> <span class="p">=</span> <span class="k">await</span> <span class="n">TipJar</span><span class="p">.</span><span class="n">fetchProducts</span><span class="p">()</span>
+            <span class="n">DispatchQueue</span><span class="p">.</span><span class="n">main</span><span class="p">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="n">withAnimation</span> <span class="p">{</span>
+                    <span class="kc">self</span><span class="p">.</span><span class="n">tipJarPrices</span> <span class="p">=</span> <span class="n">products</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>I can now use this information in the loop around the products. The <a href="https://developer.apple.com/documentation/storekit/product"><code>Product</code></a> object provides a <code>displayPrice</code> property, which handily returns the price of the tip in the user's local currency, with the currency symbol:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ForEach</span><span class="p">(</span><span class="n">TipJar</span><span class="p">.</span><span class="n">allCases</span><span class="p">,</span> <span class="n">id</span><span class="p">:</span> <span class="err">\</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">tip</span> <span class="k">in</span>
+    <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{})</span> <span class="p">{</span>
+        <span class="n">HStack</span> <span class="p">{</span>
+            <span class="n">Text</span><span class="p">(</span><span class="n">tip</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">primary</span><span class="p">)</span>
+            <span class="n">Spacer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="kd">let</span> <span class="nv">product</span> <span class="p">=</span> <span class="n">tipJarPrices</span><span class="p">[</span><span class="n">tip</span><span class="p">]</span> <span class="p">{</span>
+                <span class="n">Text</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">displayPrice</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">accentColor</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>After a brief moment with no prices available, they suddenly all fade in:</p>
+<h1>TKTK</h1>
+<p>We can do better than that, though. Using another state variable, we can notify the view when the product information has been loaded, and display a progress spinner until that point. We also need to handle the case that, for some reason, the products have been fetched but a particular tip isn't present. I chose to do so with a simple warning triangle.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">TipJarView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">tipJarPrices</span><span class="p">:</span> <span class="p">[</span><span class="n">TipJar</span><span class="p">:</span> <span class="n">Product</span><span class="p">]</span> <span class="p">=</span> <span class="p">[:]</span>
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">productsFetched</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">List</span> <span class="p">{</span>
+            <span class="n">ForEach</span><span class="p">(</span><span class="n">TipJar</span><span class="p">.</span><span class="n">allCases</span><span class="p">,</span> <span class="n">id</span><span class="p">:</span> <span class="err">\</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">tip</span> <span class="k">in</span>
+                <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{})</span> <span class="p">{</span>
+                    <span class="n">HStack</span> <span class="p">{</span>
+                        <span class="n">Text</span><span class="p">(</span><span class="n">tip</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">primary</span><span class="p">)</span>
+                        <span class="n">Spacer</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="kd">let</span> <span class="nv">product</span> <span class="p">=</span> <span class="n">tipJarPrices</span><span class="p">[</span><span class="n">tip</span><span class="p">]</span> <span class="p">{</span>
+                            <span class="n">Text</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">displayPrice</span><span class="p">)</span>
+                                <span class="p">.</span><span class="n">foregroundColor</span><span class="p">(.</span><span class="n">accentColor</span><span class="p">)</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="k">if</span> <span class="n">productsFetched</span> <span class="p">{</span>
+                                <span class="n">Image</span><span class="p">(</span><span class="n">systemName</span><span class="p">:</span> <span class="s">&quot;exclamationmark.triangle&quot;</span><span class="p">)</span>
+                            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                                <span class="n">ProgressView</span><span class="p">()</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">task</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nv">products</span> <span class="p">=</span> <span class="k">await</span> <span class="n">TipJar</span><span class="p">.</span><span class="n">fetchProducts</span><span class="p">()</span>
+            <span class="n">DispatchQueue</span><span class="p">.</span><span class="n">main</span><span class="p">.</span><span class="k">async</span> <span class="p">{</span>
+                <span class="n">withAnimation</span> <span class="p">{</span>
+                    <span class="kc">self</span><span class="p">.</span><span class="n">tipJarPrices</span> <span class="p">=</span> <span class="n">products</span>
+                    <span class="kc">self</span><span class="p">.</span><span class="n">productsFetched</span> <span class="p">=</span> <span class="kc">true</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2>Making a purchase</h2>
+<p>To initiate the actual purchase of the IAP, we need to call the <code>Product</code>'s <code>.purchase()</code> method. This async method returns a result indicating whether the purchase was successful or not, and a few other bits of information. As is my way, I chose to wrap this up in a method on the <code>TipJar</code> enum:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">extension</span> <span class="nc">TipJar</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">purchase</span><span class="p">(</span><span class="kc">_</span> <span class="n">product</span><span class="p">:</span> <span class="n">Product</span><span class="p">)</span> <span class="k">async</span> <span class="p">-&gt;</span> <span class="nb">Bool</span> <span class="p">{</span>
+        <span class="n">storeLogger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Attempting to purchase </span><span class="si">\(</span><span class="kc">self</span><span class="p">.</span><span class="n">rawValue</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+        <span class="k">do</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nv">purchaseResult</span> <span class="p">=</span> <span class="k">try</span> <span class="k">await</span> <span class="n">product</span><span class="p">.</span><span class="n">purchase</span><span class="p">()</span>
+            <span class="k">switch</span> <span class="n">purchaseResult</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="p">.</span><span class="n">success</span><span class="p">(</span><span class="kd">let</span> <span class="nv">verificationResult</span><span class="p">):</span>
+                <span class="n">storeLogger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Purchase result: success&quot;</span><span class="p">)</span>
+                <span class="k">switch</span> <span class="n">verificationResult</span> <span class="p">{</span>
+                <span class="k">case</span> <span class="p">.</span><span class="n">verified</span><span class="p">(</span><span class="kd">let</span> <span class="nv">transaction</span><span class="p">):</span>
+                    <span class="n">storeLogger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Purchase success result: verified&quot;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">transaction</span><span class="p">.</span><span class="n">finish</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="kc">true</span>
+                <span class="k">default</span><span class="p">:</span>
+                    <span class="n">storeLogger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Purchase success result: unverified&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">false</span>
+                <span class="p">}</span>
+            <span class="k">default</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">false</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+            <span class="n">storeLogger</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not purchase </span><span class="si">\(</span><span class="kc">self</span><span class="p">.</span><span class="n">rawValue</span><span class="si">)</span><span class="s">: </span><span class="si">\(</span><span class="n">error</span><span class="p">.</span><span class="n">localizedDescription</span><span class="si">)</span><span class="s">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>For ease of use in the view, I convert the result into a simple true or false for whether the purchase went through successfully. In the view, I can fire this off inside a <code>Task</code> in the button's <code>action</code> method, and handle the response appropriately. In this case, I want to display an alert saying thank you on a successful purchase, and do nothing if it was cancelled:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">struct</span> <span class="nc">TipJarView</span><span class="p">:</span> <span class="n">View</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="p">@</span><span class="n">State</span> <span class="kd">private</span> <span class="kd">var</span> <span class="nv">showingSuccessAlert</span><span class="p">:</span> <span class="nb">Bool</span> <span class="p">=</span> <span class="kc">false</span>
+    <span class="kd">var</span> <span class="nv">body</span><span class="p">:</span> <span class="n">some</span> <span class="n">View</span> <span class="p">{</span>
+        <span class="n">List</span> <span class="p">{</span>
+            <span class="n">ForEach</span><span class="p">(</span><span class="n">TipJar</span><span class="p">.</span><span class="n">allCases</span><span class="p">,</span> <span class="n">id</span><span class="p">:</span> <span class="err">\</span><span class="p">.</span><span class="kc">self</span><span class="p">)</span> <span class="p">{</span> <span class="n">tip</span> <span class="k">in</span>
+                <span class="n">Button</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">Task</span> <span class="p">{</span>
+                        <span class="n">storeLogger</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">\(</span><span class="n">tip</span><span class="p">.</span><span class="n">rawValue</span><span class="si">)</span><span class="s"> tapped&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="kd">let</span> <span class="nv">product</span> <span class="p">=</span> <span class="n">tipJarPrices</span><span class="p">[</span><span class="n">tip</span><span class="p">]</span> <span class="p">{</span>
+                            <span class="n">Task</span> <span class="p">{</span>
+                                <span class="k">if</span> <span class="k">await</span> <span class="n">tip</span><span class="p">.</span><span class="n">purchase</span><span class="p">(</span><span class="n">product</span><span class="p">)</span> <span class="p">{</span>
+                                    <span class="n">DispatchQueue</span><span class="p">.</span><span class="n">main</span><span class="p">.</span><span class="k">async</span> <span class="p">{</span>
+                                        <span class="n">withAnimation</span> <span class="p">{</span>
+                                            <span class="n">showingSuccessAlert</span> <span class="p">=</span> <span class="n">successful</span>
+                                        <span class="p">}</span>
+                                    <span class="p">}</span>
+                                <span class="p">}</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">})</span> <span class="p">{</span>
+                    <span class="p">...</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">.</span><span class="n">alert</span><span class="p">(</span><span class="n">isPresented</span><span class="p">:</span> <span class="err">$</span><span class="n">showingSuccessAlert</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Alert</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Purchase Successful&quot;</span><span class="p">),</span> <span class="n">message</span><span class="p">:</span> <span class="n">Text</span><span class="p">(</span><span class="s">&quot;Thank you for supporting Pendulum!&quot;</span><span class="p">),</span> <span class="n">dismissButton</span><span class="p">:</span> <span class="p">.</span><span class="k">default</span><span class="p">(</span><span class="n">Text</span><span class="p">(</span><span class="s">&quot;🧡&quot;</span><span class="p">)))</span>
+        <span class="p">}</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+  </div>
+  </div>
+
+  <div class="footer"><a rel="me" href="https://snailedit.social/@benbacardi"></a></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>
