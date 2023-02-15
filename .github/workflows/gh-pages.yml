@@ -35,7 +35,7 @@ jobs:
       - name: Install stuff
         run: pip install -r requirements.txt
       - name: Generate site
-        run: pelican
+        run: pelican -s publishconf.py
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
