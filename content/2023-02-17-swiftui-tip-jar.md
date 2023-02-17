@@ -1,8 +1,7 @@
 title: Implementing a Tip Jar with Swift and SwiftUI
 category: Development
 tags: Swift
-image:
-status: draft
+image: /assets/swiftui-tip-jar/prices.png
 
 Pressured by friends, I recently added a tip jar to [Pendulum](/pendulum/), the pen pal tracking app I develop with my friend [Alex](https://418teapot.net). It's implemented (like the rest of the app) in pure SwiftUI, and uses the newer [StoreKit 2](https://developer.apple.com/storekit/) APIs to communicate with Apple to fetch the IAP information and make purchases. This is a write of how I muddled through the process, from start to finish.
 
@@ -78,6 +77,8 @@ struct TipJarView: View {
 
 This presented a list of the available tips, with a place for me to put their prices (once known), and a button to purchase the tip (functionality yet to be completed):
 
+![Tip jar mockup](/assets/swiftui-tip-jar/list.png)
+
 ## Fetching IAP information with StoreKit 2
 
 The next step was to actually fetch the prices I had defined in App Store Connect within the app, and display them. For this, I needed to use Apple's [StoreKit 2](https://developer.apple.com/storekit/) APIs. The particular one I'm interested in here is [`Product.products(for:)`](https://developer.apple.com/documentation/storekit/product/3851116-products), which returns an array of `Product` objects for each ID passed in. I decided to add a static method to the `TipJar` enum to call this with all my IAP IDs, and return a mapping of `[TipJar: Product]` that the view could use. The new StoreKit 2 APIs are all asyncronous, so my function needed to be to:
@@ -108,7 +109,7 @@ extension TipJar {
 
 With this extension in place, I can add a new `State` variable to my view, and fetch the product information when the view is loaded:
 
-```swift
+```swift hl_lines="2 8 9 10 11 12 13 14 15"
 struct TipJarView: View {
     @State private var tipJarPrices: [TipJar: Product] = [:]
   
@@ -130,7 +131,7 @@ struct TipJarView: View {
 
 I can now use this information in the loop around the products. The [`Product`](https://developer.apple.com/documentation/storekit/product) object provides a `displayPrice` property, which handily returns the price of the tip in the user's local currency, with the currency symbol:
 
-```swift
+```swift hl_lines="7 8 9 10"
 ForEach(TipJar.allCases, id: \.self) { tip in
     Button(action: {}) {
         HStack {
@@ -148,11 +149,11 @@ ForEach(TipJar.allCases, id: \.self) { tip in
 
 After a brief moment with no prices available, they suddenly all fade in:
 
-#TKTK
+![Tip jar with prices](/assets/swiftui-tip-jar/prices.png)
 
 We can do better than that, though. Using another state variable, we can notify the view when the product information has been loaded, and display a progress spinner until that point. We also need to handle the case that, for some reason, the products have been fetched but a particular tip isn't present. I chose to do so with a simple warning triangle.
 
-```swift
+```swift hl_lines="3 16 17 18 19 20 21 32"
 struct TipJarView: View {
     @State private var tipJarPrices: [TipJar: Product] = [:]
     @State private var productsFetched: Bool = false
@@ -192,6 +193,8 @@ struct TipJarView: View {
 }
 ```
 
+![Tip jar loading](/assets/swiftui-tip-jar/loading.gif)
+
 ## Making a purchase
 
 To initiate the actual purchase of the IAP, we need to call the `Product`'s `.purchase()` method. This async method returns a result indicating whether the purchase was successful or not, and a few other bits of information. As is my way, I chose to wrap this up in a method on the `TipJar` enum:
@@ -225,9 +228,9 @@ extension TipJar {
 }
 ```
 
-For ease of use in the view, I convert the result into a simple true or false for whether the purchase went through successfully. In the view, I can fire this off inside a `Task` in the button's `action` method, and handle the response appropriately. In this case, I want to display an alert saying thank you on a successful purchase, and do nothing if it was cancelled:
+For ease of use in the view, I convert the result into a simple `true` or `false` for whether the purchase went through successfully. In the view, I can fire this off inside a `Task` in the button's `action` method, and handle the response appropriately. In this case, I want to display an alert saying thank you on a successful purchase, and do nothing if it was cancelled:
 
-```swift
+```swift hl_lines="3 8 9 10 11 12 13 14 15 16 17 18 19 25 26 27"
 struct TipJarView: View {
     ...
     @State private var showingSuccessAlert: Bool = false
@@ -235,15 +238,13 @@ struct TipJarView: View {
         List {
             ForEach(TipJar.allCases, id: \.self) { tip in
                 Button(action: {
-                    Task {
-                        storeLogger.debug("\(tip.rawValue) tapped")
-                        if let product = tipJarPrices[tip] {
-                            Task {
-                                if await tip.purchase(product) {
-                                    DispatchQueue.main.async {
-                                        withAnimation {
-                                            showingSuccessAlert = successful
-                                        }
+                    storeLogger.debug("\(tip.rawValue) tapped")
+                    if let product = tipJarPrices[tip] {
+                        Task {
+                            if await tip.purchase(product) {
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        showingSuccessAlert = successful
                                     }
                                 }
                             }
@@ -262,5 +263,113 @@ struct TipJarView: View {
 }
 ```
 
+![Tip jar success alert](/assets/swiftui-tip-jar/alert.png)
 
+We now have a fully-functional tip jar! Users can view the list of tips, complete with pricing information in their own local currency, and tap on a tip to purchase it.
 
+## Preventing user interaction
+
+The final niggle I wanted to fix was preventing user interaction with the tip buttons in three situations:
+
+* while the tip information is still loading,
+* if there was an error loading a particular tip, and
+* while an IAP purchase is in progress.
+
+The first two situations can be handled together: in both cases, the `tipJarPrices` dict has no entry for the given tip. A simple `disabled` modifier on the `Button` will prevent the user from tapping it:
+
+```swift hl_lines="9"
+struct TipJarView: View {
+    ...
+    var body: some View {
+        List {
+            ForEach(TipJar.allCases, id: \.self) { tip in
+                Button(action: { ... }) {
+                    ...
+                }
+                .disabled(tipJarPrices[tip] == nil)
+            }
+        }
+        ...
+    }
+}
+```
+
+The latter requires us to store some information about whether a purchase is in progress or not. Again, a `State` variable is perfect here. We can set it when the tip is tapped, and check it later:
+
+```swift hl_lines="3 8 11 12 13 20 31 32 33 36 48"
+struct TipJarView: View {
+    ...
+    @State private var pendingPurchase: TipJar? = nil
+    var body: some View {
+        List {
+            ForEach(TipJar.allCases, id: \.self) { tip in
+                Button(action: {
+                    guard pendingPurchase == nil else { return }
+                    storeLogger.debug("\(tip.rawValue) tapped")
+                    if let product = tipJarPrices[tip] {
+                        withAnimation {
+                            pendingPurchase = tip
+                        }
+                        Task {
+                            let successful = await tip.purchase(product)
+                            storeLogger.debug("Successful? \(successful)")
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    showingSuccessAlert = successful
+                                    pendingPurchase = nil
+                                }
+                            }
+                        }
+                    }
+                }) {
+                    GroupBox {
+                        HStack {
+                            Text("\(tip.name) Tip")
+                                .fullWidth()
+                            if let product = tipJarPrices[tip] {
+                                if pendingPurchase == tip {
+                                    ProgressView()
+                                } else {
+                                    Text(product.displayPrice)
+                                        .foregroundColor(.accentColor)
+                                }
+                            } else {
+                                if productsFetched {
+                                    Image(systemName: "exclamationmark.triangle")
+                                } else {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
+                .disabled(tipJarPrices[tip] == nil || pendingPurchase != nil)
+            }
+        }
+        ...
+    }
+}
+```
+
+There's a few parts to this code, so I'll highlight them here:
+
+* The `State` variable stores whether or not a purchase is in progress, and if so, which tip is being purchased.
+* When a tip is tapped, we guard against making multiple concurrent purchases by immediately returning if `pendingPurchase` isn't `nil`.
+* If there's no purchase in progress, we update `pendingPurchase` when a tip is tapped, and set it back to `nil` once the purchase has completed.
+* If a purchase is pending for a given tip (`purchasePending == tip`), we display a progress spinner instead of the price, so the user knows that something is still happening.
+* Finally, we disable the button for each tip while a purchase is in progress.
+
+![Tip jar Apple confirmation](/assets/swiftui-tip-jar/confirm.png)
+
+## What I learned
+
+In putting this tip jar together, I learned a number of things, not least:
+
+* how to define IAPs in App Store Connect;
+* how to fetch that IAP information using StoreKit 2, and display it in the app; and
+* how to initiate IAP purchases when the user taps a button, and handle the various possible responses.
+
+There are a number of ways we could improve upon this basic tip jar, but it's a pretty decent start. In my own implementation in the app, I also added support for storing a history of how many of each tip the user has purchased, in order to show them the size of their "tip collection" for a little bit of whimsy (and to hopefully encourage more tips!). That's left as an exercise for the reader; but I'm storing the information in `NSUbiquitousKeyValueStore`, a useful little class that automatically syncs its using iCloud.
+
+Hopefully you've found some useful information in this post to inspire you to add a tip jar to your own indie apps! I'd love to hear about them: let me know on [Mastodon](https://snailedit.social/@benbacardi).

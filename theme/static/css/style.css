@@ -142,6 +142,7 @@ pre code {
     padding-top: 3px;
     padding-bottom: 3px;
     padding-right: 6px;
+    background-color: rgb(250, 234, 239);
 }
 
 /* Links */
@@ -156,6 +157,15 @@ a:hover {
 
 .post-date, .post-date:hover {
     color: var(--bs-secondary);
+}
+
+a.headerlink {
+    margin-left: 5px;
+    opacity: 0;
+}
+
+h1:hover a.headerlink, h2:hover a.headerlink, h3:hover a.headerlink, h4:hover a.headerlink, h5:hover a.headerlink, h6:hover a.headerlink {
+    opacity: 0.5;
 }
 
 /* Images */

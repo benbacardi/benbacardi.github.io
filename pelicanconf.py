@@ -33,3 +33,18 @@ CATEGORIES_URL = "/categories/"
 CATEGORIES_SAVE_AS = "categories/index.html"
 TAGS_URL = "/tags/"
 TAGS_SAVE_AS = "tags/index.html"
+
+MARKDOWN = {
+    "extension_configs": {
+        "markdown.extensions.extra": {},
+        "markdown.extensions.admonition": {},
+        "markdown.extensions.codehilite": {
+            "css_class": "highlight",
+        },
+        "markdown.extensions.meta": {},
+        "smarty": {"smart_angled_quotes": "true"},
+        "markdown.extensions.toc": {
+            "permalink": "true",
+        },
+    }
+}
