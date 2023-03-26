@@ -1,0 +1,185 @@
+<html>
+<head>
+  <meta name="viewport" content="user-scalable=no, width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style type="text/css" media="screen">
+
+    body {
+      font-family: system-ui, san-serif;
+      background-color: white;
+      color: black;
+      font-size: 120%;
+    }
+
+    html, body{
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    div.accordion {
+      background: rgba(251, 171, 57, 0.2);
+      font-weight: 500;
+      border-radius: 5px;
+      padding: 8px;
+      cursor: pointer;
+      text-align: left;
+      border: 2px solid rgb(251, 171, 57);
+      outline: none;
+      transition: 0.4s;
+    }
+
+    /* Style the element that is used for the panel class */
+    div.panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      margin: 5px 0;
+    }
+
+    div.panel.show {
+      background: rgb(251, 171, 57, 0.2);
+      border-radius: 5px;
+      opacity: 1;
+      max-height: 5000px; /* Whatever you like, as long as its more than the height of the content (on all screen sizes) */
+      color: black;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    a {
+      color: rgb(251, 171, 57);
+    }
+
+    h2 {
+      margin: 0px;
+      color: rgb(251, 171, 57);
+    }
+
+    h3 {
+      margin: 0px;
+      font-size: 100%;
+      margin-bottom: 1rem;
+    }
+
+    h4 {
+      margin:  5px;
+      color: rgb(251, 171, 57);
+    }
+
+    .button {
+      background-color: rgb(251, 171, 57);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 20px;
+      margin: 4px 2px;
+      border-radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        color: darkgray;
+        background-color: black;
+      }
+
+      div.accordion {
+        color: white;
+      }
+
+      div.panel.show {
+        background:#1D2226;
+        color: white;
+      }
+
+    }
+
+  </style>
+
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+
+      var acc = document.getElementsByClassName("accordion");
+      var panel = document.getElementsByClassName('panel');
+
+      for (var i = 0; i < acc.length; i++) {
+        acc[i].onclick = function() {
+
+          var setClasses = !this.classList.contains('active');
+          setClass(acc, 'active', 'remove');
+          setClass(panel, 'show', 'remove');
+
+          if (setClasses) {
+            this.classList.toggle("active");
+            this.nextElementSibling.classList.toggle("show");
+          }
+        }
+      }
+
+      function setClass(els, className, fnName) {
+        for (var i = 0; i < els.length; i++) {
+          els[i].classList[fnName](className);
+        }
+      }
+
+    });
+  </script>
+
+  <title>Pendulum FAQ</title>
+</head>
+<body>
+
+  <div style="padding: 16px">
+
+    <h2>Pendulum</h2>
+    <h3>Frequently Asked Questions</h3>
+
+    <div class="accordion">I don't want to have to log every letter as both <strong>written</strong> and <strong>sent</strong>. Can I skip that?</div>
+    <div class="panel">
+      <p>Absolutely! You can simply not log any items as <strong>sent</strong> and only use the <strong>written</strong> events, but to avoid Pendulum constantly reminding you that you have items to post, you can toggle "Track posting letters" to <strong>off</strong> in the Settings tab.</p>
+    </div>
+
+    <div class="accordion">How do I mark a received item as something I do not need to respond to?</div>
+    <div class="panel">
+      <p>Once you've logged an item as received, tap on the event in the correspondence history, and switch the "No responses needed" toggle to <strong>on</strong>. You will no longer be prompted to respond to the item.</p>
+    </div>
+
+    <div class="accordion">What does "No response needed" mean?</div>
+    <div class="panel">
+      <p>When you log some correspondence (such as sending or receiving a letter), you can mark the event as "no response needed". This means Pendulum won't use this event when determining the state of the Pen Pal. For example, a received postcard marked as "no response needed" won't prompt or remind you to reply to it; and a sent parcel won't sit in the "you're waiting for a reply!" section indefinitely.</p>
+    </div>
+
+    <div class="accordion">How do I delete a Pen Pal?</div>
+    <div class="panel">
+      <p>From the main list of Pen Pals, you can swipe a Pen Pal to the left and tap the trash can icon to delete it. You will be prompted for confirmation, but be careful - this is irreversible!</p>
+    </div>
+
+    <div class="accordion">What does archiving a Pen Pal mean?</div>
+    <div class="panel">
+      <p>When you archive a Pen Pal, they move to a section at the bottom of the Pen Pals list, and you won't be prompted to write back or be constantly waiting for a reply. You won't lose the history of your correspondence.</p>
+    </div>
+
+    <div class="accordion">How do I add an address to a Pen Pal?</div>
+    <div class="panel">
+      <p>If you have Contacts integration <strong>enabled</strong> (a toggle in the Settings tab, which is on by default), Pendulum will pull your Pen Pal's address information from Contacts. To update this info, use the Contacts app,</p>
+      <p>If you have Contacts integration <strong>disabled</strong>, there is currently no way to add address information to a Pen Pal. Consider adding your Pen Pals to your Contacts address book—perhaps under a new group to keep them separate.</p>
+    </div>
+
+    <center>
+        <br/>
+        Still have a question?
+        <br/>
+        <br/>
+        <a class="button" href="mailto:pendulum@bencardy.co.uk">Email Us</a>
+        <br/>
+        <br/>
+    </center>
+
+  </div>
+</body>
+</html>
