@@ -1,6 +1,6 @@
 title: SwiftUI: Equal Width Icons
 category: Development
-tags: Swift
+tags: Swift, SwiftUI
 image: /assets/swiftui-equal/fixed.png
 
 Following on from my previous post on [SwiftUI Text alignment]({filename}2023-01-25-swiftui-text-views.md), I thought I'd post about another common issue I run into and how to solve it relatively simply: equal width icons. This logic applies to any series of Views you want to display equally in either height or width, but the most common place it occurs in my own code is when using SF Symbols. Each symbol has its own width, so when using them as bullets or in other situations where you want them to line up it can be infuriating.

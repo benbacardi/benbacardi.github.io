@@ -1,6 +1,6 @@
 title: SwiftUI Text Views and Alignment
 category: Development
-tags: Swift
+tags: Swift, SwiftUI
 image: /assets/swiftui-text/multiple-plus-borders.png
 
 There's no doubting that SwiftUI makes app development fast and easy—I certainly wouldn't have two apps on the store by now without it—but it's not without its sharp edges and unexpected behaviours.

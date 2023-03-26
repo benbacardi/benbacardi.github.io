@@ -1,6 +1,6 @@
 title: Matching the List background colour in SwiftUI
 category: Development
-tags: Swift
+tags: Swift, SwiftUI
 image: /assets/swiftui-secondary-background.png
 date: 2023-03-26 20:00
 

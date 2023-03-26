@@ -1,6 +1,6 @@
 title: Implementing a Tip Jar with Swift and SwiftUI
 category: Development
-tags: Swift
+tags: Swift, SwiftUI
 image: /assets/swiftui-tip-jar/prices.png
 
 Pressured by friends, I recently added a tip jar to [Pendulum](/pendulum/), the pen pal tracking app I develop with my friend [Alex](https://418teapot.net). It's implemented (like the rest of the app) in pure SwiftUI, and uses the newer [StoreKit 2](https://developer.apple.com/storekit/) APIs to communicate with Apple to fetch the IAP information and make purchases. This is a write of how I muddled through the process, from start to finish.
