@@ -158,8 +158,8 @@ Once again, putting the borders back in, it's clear what's now going on:
 
 ---
 > A brief note about the way `alignment:` works within the `frame` modifier: it is not for aligning the text, it is for aligning **the view within the frame**. When we say `.frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)`, despite what it looks like, we're not actually asking SwiftUI to change the size of the `Text` view—instead, we're asking SwiftUI to place that view within a frame that takes up the specified space, and place it at the left of the space. If we put a border around the `Text` view **before** the frame modifier (green), and another **after** (red), we can see what SwiftUI is doing under the hood:
->
-> ```swift
+
+```swift
 Text("Allow Rest Days")
     .font(.headline)
     .border(.green)
@@ -170,8 +170,8 @@ Text("When enabled, activity streaks will not be broken by a single day missed a
     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
     .border(.red)
 ```
->
-> ![](/assets/swiftui-text/frame-border.png)
+
+![](/assets/swiftui-text/frame-border.png)
 
 ---
 
