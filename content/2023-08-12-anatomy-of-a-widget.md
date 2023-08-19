@@ -167,6 +167,8 @@ struct MyWidgets: WidgetBundle {
 
 Multiple different widgets can be returned, just put each on a new line within the `body`. You can also do some logic here, such as `if #available` checks to limit certain widgets to particular iOS versions, etc.
 
+If you have multiple widgets that need the same data, you can reuse the same Timeline Entry and Timeline Provider in multiple `Widget` structs.
+
 ---
 
 With that, your app should be able to provide one or more widgets to the user, and control what sizes they are available in. However, you can't yet provide options for the user to pick from, allowing them to "edit" the widget. I'll write up what I know about that in another post, soon!
