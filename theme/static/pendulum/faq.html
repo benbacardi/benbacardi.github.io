@@ -19,7 +19,7 @@
 
     div.accordion {
       background: rgba(251, 171, 57, 0.2);
-      font-weight: 500;
+/*      font-weight: 500;*/
       border-radius: 5px;
       padding: 8px;
       cursor: pointer;
@@ -168,6 +168,23 @@
     <div class="panel">
       <p>If you have Contacts integration <strong>enabled</strong> (a toggle in the Settings tab, which is on by default), Pendulum will pull your Pen Pal's address information from Contacts. To update this info, use the Contacts app,</p>
       <p>If you have Contacts integration <strong>disabled</strong>, there is currently no way to add address information to a Pen Pal. Consider adding your Pen Pals to your Contacts address book—perhaps under a new group to keep them separate.</p>
+    </div>
+
+    <div class="accordion">Can I export my data?</div>
+    <div class="panel">
+      <p>From the <strong>Backup and Restore</strong> section of <strong>Settings</strong>, you can generate and export a backup of your data that you can later re-import into the app. Pendulum will keep the most recent archive you generate, but you can (and are encouraged to) save it elsewhere for safe keeping.</p>
+      <p>Pendulum will have generated an initial archive when you first launched version 1.10.</p>
+    </div>
+
+    <div class="accordion">How do I restore from a backup?</div>
+    <div class="panel">
+      <p>From the <strong>Backup and Restore</strong> section of <strong>Settings</strong>, you can choose to restore from a backup archive—either the one Pendulum is storing locally for you, or one you have saved elsewhere in Files.</p>
+      <p>When restoring, Pendulum will add any new Pen Pals, logged events, photos, and stationery items into the database that exist in the backup. If a Pen Pal or event already exists, Pendulum will either overwrite its data with the one from the backup archive, or keep the one in the database, depending on whether you have <strong>Overwrite Duplicates</strong> toggled or not.</p>
+    </div>
+
+    <div class="accordion">Pendulum is using too much storage space.</div>
+    <div class="panel">
+      <p>You can free up storage by deleting the in-app backup archive that Pendulum is storing, if there is one. You can do this from the <strong>Backup and Restore</strong> section of <strong>Settings</strong>, by swiping left on the backup archive's name.</p>
     </div>
 
     <center>
