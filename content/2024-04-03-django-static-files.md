@@ -70,7 +70,7 @@ When running Django with the development server (`manage.py runserver`) and `DEB
 
 However, as mentioned above, it's inefficient to have Django serve these files itself when deployed in a production environment. Instead, that responsibility is usually handed off to a web server or proxy that sits in front of Django, such as nginx. So how does this proxy know where to find the static files?
 
-The answer js in the `STATIC_ROOT` setting. This should be pointed to a directory on the file system that, once deployed, both the Django application and the proxy can access. 
+The answer is in the `STATIC_ROOT` setting. This should be pointed to a directory on the file system that, once deployed, both the Django application and the proxy can access. 
 
 What should be in that directory? Nothing, to start with. Part of the deployment process should be to run `manage.py collectstatic`, a built-in management command which runs round all the various folders the static files live in (see the first point above) and copies them into the `STATIC_ROOT` directory, ready for the proxy to efficiently serve them.
 
