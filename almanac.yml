@@ -103,6 +103,9 @@ events:
     - date: 2009-01-01 # Estimate
       title: Avenue Q
       image: avenueq.png
+  2007:
+    - title: Bowling for Soup @ Southampton Guildhall
+      image: bfs.jpg
   Undated:
     - title: Sister Act
       image: sister-act.jpg
