@@ -192,6 +192,7 @@ img {
     aspect-ratio: 1 / 1.5;
     background-color: rgba(var(--bs-primary-rgb), 0.1);
     background-position: 50% 0;
+    overflow: hidden;
 }
 
 .almanac h3 {
@@ -203,4 +204,12 @@ img {
 
 .almanac .title {
     padding: 1rem;
+}
+
+
+
+@media (max-width: 600px) {
+    .almanac {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
