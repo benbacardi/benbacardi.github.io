@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Shows{% endblock %}
+
+{% block content %}
+
+  <h1>Shows</h1>
+
+  <p>Live performances I've attended, heavily inspired by <a href="https://rknight.me/almanac/events/" target="_blank">Robb Knight's Almanac</a>.</p>
+
+  <div class="post page single-post">
+
+    <section class="almanac">
+
+      {% for year, data in ALMANAC["events"].items() %}
+        <h3>{{ year }}</h3>
+
+        {% for event in data %}
+          <div class="event" style="background-image: url(/assets/almanac/{{ event.image }});">
+            <span class="title" style="{% if event.image is defined %}visibility: hidden;{% endif %}">{{ event.title }}</span>
+          </div>
+        {% endfor %}
+
+      {% endfor %}
+
+    </section>
+
+  </div>
+
+{% endblock %}

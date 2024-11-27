@@ -1,0 +1,113 @@
+events:
+  2024:
+    - date: 2024-11-23
+      title: Harry Potter and the Cursed Child
+      image: hpcc.jpg
+    - date: 2024-08-30
+      title: Bluey's Big Play
+      image: bbs.jpg
+    - date: 2024-07-27
+      title: Relay 10
+      image: relay-10.jpg
+    - date: 2024-07-26
+      title: Hadestown
+      image: hadestown.png
+  2023:
+    - date: 2023-12-19
+      title: The Unfriend
+      image: the-unfriend.jpg
+    - date: 2023-08-20
+      title: Charlie and the Chocolate Factory
+      image: ccf.jpg
+    - date: 2023-05-23
+      title: The Lion King
+      image: lionking.jpg
+  2022:
+    - date: 2022-11-19
+      title: Frozen
+      image: frozen.jpg
+    - date: 2022-09-03
+      title: Hamilton
+      image: hamilton.jpg
+  2019:
+    - date: 2019-12-05
+      title: Nativity! The Musical
+      image: nativity.jpg
+    - date: 2019-07-27
+      title: Matilda the Musical
+      image: matilda.jpeg
+  2017:
+    - date: 2017-11-11
+      title: Million Dollar Quartet
+      image: mdq.jpg
+  2016:
+    - date: 2016-02-19
+      title: Chitty Chitty Bang Bang
+      image: chitty.jpg
+  2015:
+    - date: 2015-04-11
+      title: Dreamboats and Miniskirts
+      image: dreamboats-miniskirts.jpg
+    - date: 2015-03-07
+      title: Jeeves and Wooster
+      image: jeeves-wooster.webp
+  2014:
+    - date: 2014-03-21
+      title: The Guess List recording
+      image: guesslist.jpg
+    - date: 2024-02-14
+      title: Jersey Boys
+      image: jersey.png
+  2013:
+    - date: 2013-08-08
+      title: One Man Two Guvnors
+      image: oneman.jpg
+    - date: 2013-02-01
+      title: Singin' in the Rain
+      image: singin.jpg
+  2012:
+    - date: 2012-10-01
+      title: The Infinite Monkey Cage recording
+      image: infinite.png
+  2011:
+    - date: 2011-04-08
+      title: Scouting for Girls @ Wembley Arena
+  2010:
+    - date: 2010-08-12
+      title: We Will Rock You
+      image: we-will-rock-you.jpg
+    - date: 2010-08-05
+      title: Dreamboats and Petticoats
+      image: dreamboats-petticoats.jpg
+    - date: 2010-07-01 # Estimate
+      title: Ben & Jerry's Festival @ Clapham Common
+  2009:
+    - date: 2009-07-20
+      title: Wicked
+      image: wicked.jpg
+    - date: 2009-06-16
+      title: Blood Brothers
+      image: blood-brothers.jpg
+    - date: 2009-06-05
+      title: Chicago
+      image: chicago.jpg
+    - date: 2009-05-11
+      title: Les Miserables
+      image: les-mis.jpg
+    - date: 2009-03-01 # Estimate
+      title: The Lion King - Broadway
+      image: lionking.jpg
+    - date: 2009-02-01 # Estimate
+      title: The Phantom of the Opera
+      image: phantom.jpg
+    - date: 2009-01-01 # Estimate
+      title: Avenue Q
+      image: avenueq.png
+  Undated:
+    - title: Sister Act
+      image: sister-act.jpg
+    - title: Birdsong
+      image: birdsong.jpg
+    - title: Love Never Dies
+      image: love-never-dies.png
+

@@ -53,7 +53,7 @@ hr { margin: 2rem 0; border-top: 1px dashed }
 
 /* Fonts */
 
-.navbar-brand, h1, h2, h3, h4, h5, h6 {
+.navbar-brand, h1, h2, h3, h4, h5, h6, .event .title {
     font-family:  "Jockey One";
 }
 
@@ -173,4 +173,34 @@ h1:hover a.headerlink, h2:hover a.headerlink, h3:hover a.headerlink, h4:hover a.
 img {
     max-width: 100%;
     border-radius: 5px;
+}
+
+/* Almanac */
+
+.almanac {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+.almanac > * {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-size: cover;
+    aspect-ratio: 1 / 1.5;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    background-position: 50% 0;
+}
+
+.almanac h3 {
+    background-color: rgb(var(--bs-primary-rgb));
+    color: white;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.almanac .title {
+    padding: 1rem;
 }

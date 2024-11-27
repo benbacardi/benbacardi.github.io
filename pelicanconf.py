@@ -48,3 +48,6 @@ MARKDOWN = {
         },
     }
 }
+
+import yaml
+ALMANAC = yaml.safe_load(open("almanac.yml").read())
