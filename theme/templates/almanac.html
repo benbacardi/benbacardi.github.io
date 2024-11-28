@@ -13,11 +13,16 @@
     <section class="almanac">
 
       {% for year, data in ALMANAC["events"].items() %}
-        <h3>{{ year }}</h3>
+        <h3>
+          <span>
+            {{ year }}<br />
+            <small>{{ data|length }} event{% if data|length > 1 %}s{% endif %}</small>
+          </span>
+        </h3>
 
         {% for event in data %}
-          <div class="event" style="background-image: url(/assets/almanac/{{ event.image }});">
-            <span class="title" style="{% if event.image is defined %}visibility: hidden;{% endif %}">{{ event.title }}</span>
+          <div class="event {% if event.image is defined %}has-image{% endif %}" {% if event.image is defined %}style="background-image: url(/assets/almanac/{{ event.image }});"{% endif %} title="{{ event.title }}{% if event.venue is defined %} @ {{ event.venue }}{% endif %}">
+            <span class="title">{{ event.title }}{% if event.venue is defined %} @ {{ event.venue }}{% endif %}</span>
           </div>
         {% endfor %}
 

@@ -3,114 +3,151 @@ events:
     - date: 2024-11-23
       title: Harry Potter and the Cursed Child
       image: hpcc.jpg
+      venue: Palace Theatre, London
     - date: 2024-08-30
       title: Bluey's Big Play
       image: bbs.jpg
+      venue: Mayflower Theatre, Southampton
     - date: 2024-07-27
       title: Relay 10
       image: relay-10.jpg
+      venue: Hackney Empire, London
     - date: 2024-07-26
       title: Hadestown
       image: hadestown.png
+      venue: Lyric Theatre, London
   2023:
     - date: 2023-12-19
       title: The Unfriend
       image: the-unfriend.jpg
+      venue: Wyndham's Theatre, London
     - date: 2023-08-20
       title: Charlie and the Chocolate Factory
       image: ccf.jpg
+      venue: Mayflower Theatre, Southampton
     - date: 2023-05-23
       title: The Lion King
       image: lionking.jpg
+      venue: Lyceum Theatre, London
   2022:
     - date: 2022-11-19
       title: Frozen
       image: frozen.jpg
+      venue: Theatre Royal, Drury Lane, London
     - date: 2022-09-03
       title: Hamilton
       image: hamilton.jpg
+      venue: Victoria Palace Theatre, London
   2019:
     - date: 2019-12-05
       title: Nativity! The Musical
       image: nativity.jpg
+      venue: Mayflower Theatre, Southampton
     - date: 2019-07-27
       title: Matilda the Musical
       image: matilda.jpeg
+      venue: Mayflower Theatre, Southampton
   2017:
     - date: 2017-11-11
       title: Million Dollar Quartet
       image: mdq.jpg
+      venue: Chichester Festival Theatre
   2016:
     - date: 2016-02-19
       title: Chitty Chitty Bang Bang
       image: chitty.jpg
+      venue: Mayflower Theatre, Southampton
   2015:
     - date: 2015-04-11
       title: Dreamboats and Miniskirts
       image: dreamboats-miniskirts.jpg
+      venue: The Hawth, Crawley
     - date: 2015-03-07
       title: Jeeves and Wooster
       image: jeeves-wooster.webp
+      venue: Chichester Festival Theatre
   2014:
     - date: 2014-03-21
       title: The Guess List recording
       image: guesslist.jpg
+      venue: Pinewood Studios
     - date: 2024-02-14
       title: Jersey Boys
       image: jersey.png
+      venue: Prince Edward Theatre, London
   2013:
     - date: 2013-08-08
       title: One Man Two Guvnors
       image: oneman.jpg
+      venue: Haymarket Theatre Royal, London
     - date: 2013-02-01
       title: Singin' in the Rain
       image: singin.jpg
+      venue: Palace Theatre, London
   2012:
     - date: 2012-10-01
       title: The Infinite Monkey Cage recording
       image: infinite.png
   2011:
     - date: 2011-04-08
-      title: Scouting for Girls @ Wembley Arena
+      title: Scouting for Girls
+      venue: Wembley Arena
   2010:
     - date: 2010-08-12
       title: We Will Rock You
       image: we-will-rock-you.jpg
+      venue: Dominion Theatre, London
     - date: 2010-08-05
       title: Dreamboats and Petticoats
       image: dreamboats-petticoats.jpg
+      venue: Playhouse Theatre, London
     - date: 2010-07-01 # Estimate
-      title: Ben & Jerry's Festival @ Clapham Common
+      title: Ben & Jerry's Festival
+      venue: Clapham Common
+    - title: Birdsong
+      image: birdsong.jpg
+      venue: Comedy Theatre, London
+    - title: Love Never Dies
+      image: love-never-dies.png
+      venue: Adelphi Theatre, London
   2009:
+    - title: Sister Act
+      image: sister-act.jpg
+      venue: London Palladium
     - date: 2009-07-20
       title: Wicked
       image: wicked.jpg
+      venue: Apollo Victoria Theatre, London
     - date: 2009-06-16
       title: Blood Brothers
       image: blood-brothers.jpg
+      venue: Phoenix Theatre, London
     - date: 2009-06-05
       title: Chicago
       image: chicago.jpg
+      venue: Cambridge Theatre, London
     - date: 2009-05-11
       title: Les Miserables
       image: les-mis.jpg
+      venue: Queen's Theatre, London
     - date: 2009-03-01 # Estimate
-      title: The Lion King - Broadway
+      title: The Lion King
       image: lionking.jpg
+      venue: Minskoff Theatre, New York
     - date: 2009-02-01 # Estimate
       title: The Phantom of the Opera
       image: phantom.jpg
+      venue: Her Majesty's Theatre, London
     - date: 2009-01-01 # Estimate
       title: Avenue Q
       image: avenueq.png
+      venue: Noël Coward Theatre, London
   2007:
-    - title: Bowling for Soup @ Southampton Guildhall
+    - title: Bowling for Soup
       image: bfs.jpg
+      venue: Southampton Guidhall
   Undated:
-    - title: Sister Act
-      image: sister-act.jpg
-    - title: Birdsong
-      image: birdsong.jpg
-    - title: Love Never Dies
-      image: love-never-dies.png
+    - title: Kiss Me Kate
+      image: kmc.jpg
+      venue: Chichester Festival Theatre
 

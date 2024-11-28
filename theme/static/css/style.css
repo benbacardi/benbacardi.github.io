@@ -7,6 +7,7 @@
     --bs-body-color: rgb(81, 81, 81);
     --bs-code-color: var(--bs-orange);
     --bs-font-sans-serif: Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --_hypercard-scale: 1.1;
 }
 
 /* Container */
@@ -202,11 +203,36 @@ img {
     margin-bottom: 0;
 }
 
+.almanac h3 small {
+    opacity: 0.3;
+}
+
 .almanac .title {
     padding: 1rem;
 }
 
+.almanac .event {
+    transition-duration: 150ms;
+    transition-property: transform, box-shadow;
+    transition-timing-function: ease-out;
+    transform: rotate3d(0);
+}
 
+.almanac .event:hover {
+    transform: scale3d(var(--_hypercard-scale), var(--_hypercard-scale), var(--_hypercard-scale));
+    box-shadow: 0 5px 20px 5px #00000044;
+}
+
+.almanac .event.has-image .title {
+    opacity: 0;
+    /*transition-duration: 150ms;
+    transition-property: opacity;
+    transition-timing-function: ease-out;*/
+}
+
+.almanac .event.has-image:hover .title {
+/*    opacity: 1;*/
+}
 
 @media (max-width: 600px) {
     .almanac {
