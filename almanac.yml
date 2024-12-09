@@ -66,6 +66,9 @@ events:
       title: Jeeves and Wooster
       image: jeeves-wooster.webp
       venue: Chichester Festival Theatre
+    - title: Spamalot
+      image: spamalot.jpeg
+      venue: Mayflower Theatre, Southampton
   2014:
     - date: 2014-03-21
       title: The Guess List recording
