@@ -39,6 +39,7 @@
           <li class="nav-item"><a class="nav-link {% if "archive" in output_file %}active{% endif %}" href="{{ ARCHIVES_URL }}">Archive</a></li>
           <li class="nav-item"><a class="nav-link {% if "categories" in output_file %}active{% endif %}" href="{{ CATEGORIES_URL }}">Categories</a></li>
           <li class="nav-item"><a class="nav-link {% if "tags" in output_file %}active{% endif %}" href="{{ TAGS_URL }}">Tags</a></li>
+          <li class="nav-item"><a class="nav-link {% if output_file.startswith("shows/") %}active{% endif %}" href="/shows/">Shows</a></li>
 
         </ul>
 
