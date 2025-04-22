@@ -1,4 +1,9 @@
 events:
+  2025:
+    - date: 2025-04-22
+      title: Hamilton
+      image: hamilton.jpg
+      venue: Mayflower Theatre, Southampton
   2024:
     - date: 2024-12-29
       title: Cinderella
