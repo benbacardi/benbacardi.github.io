@@ -16,10 +16,10 @@ events:
 #     title: Starlight Express
 #     image: starlight-express.jpg
 #     venue: Troubadour Wembley Park Theatre
-#   - date: 2025-08-09
-#     title: Operation Mincemeat
-#     image: operation-mincemeat.png
-#     venue: Fortune Theatre, London
+    - date: 2025-08-09
+      title: Operation Mincemeat
+      image: operation-mincemeat.png
+      venue: Fortune Theatre, London
     - date: 2025-04-22
       title: Hamilton
       image: hamilton.jpg
