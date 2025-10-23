@@ -8,6 +8,7 @@
     --bs-code-color: var(--bs-orange);
     --bs-font-sans-serif: Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --_hypercard-scale: 1.1;
+    --bs-body-line-height: 1.6;
 }
 
 /* Container */
@@ -55,11 +56,14 @@ hr { margin: 2rem 0; border-top: 1px dashed }
 /* Fonts */
 
 .navbar-brand, h1, h2, h3, h4, h5, h6, .event .title {
-    font-family:  "Jockey One";
+    font-family:  "Roboto Slab";
+    font-style: normal;
+    font-optical-sizing: auto;
+    font-weight: 100;
 }
 
 .post h1 {
-    font-size: 1.6rem;
+    font-size: 2.5rem;
     margin-bottom: 0;
 }
 
