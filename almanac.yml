@@ -8,10 +8,10 @@ events:
 #     title: Six
 #     image: six.jpg.webp
 #     venue: Mayflower Theatre, Southampton
-#   - date: 2025-11-01
-#     title: Busted vs McFly
-#     image: busted-vs-mcfly.jpg
-#     venue: The O2
+    - date: 2025-11-01
+      title: Busted vs McFly
+      image: busted-vs-mcfly.jpg
+      venue: The O2
     - date: 2025-08-25
       title: Starlight Express
       image: starlight-express.jpg
