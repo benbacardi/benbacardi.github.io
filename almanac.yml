@@ -4,10 +4,10 @@ events:
 #     title: Paddington
 #     image: paddington.jpg
 #     venue: Savoy Theatre
-#   - date: 2025-12-03
-#     title: Six
-#     image: six.jpg.webp
-#     venue: Mayflower Theatre, Southampton
+    - date: 2025-12-03
+      title: Six
+      image: six.jpg.webp
+      venue: Mayflower Theatre, Southampton
     - date: 2025-11-01
       title: Busted vs McFly
       image: busted-vs-mcfly.jpg
