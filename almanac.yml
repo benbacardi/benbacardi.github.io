@@ -1,4 +1,9 @@
 events:
+  2026:
+    - date: 2026-01-04
+      title: Cinderella (by TFYT)
+      image: cinderella.webp
+      venue: Titchfield Festival Theatre (Arden)
   2025:
     - date: 2025-12-13
       title: Paddington
