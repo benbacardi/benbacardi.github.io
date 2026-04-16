@@ -1,5 +1,9 @@
 events:
   2026:
+    - date: 2026-04-05
+      title: Cirque du Soleil Drawn to Life
+      image: drawntolife.png
+      venue: Disney Springs, Florida
     - date: 2026-01-04
       title: Cinderella (by TFYT)
       image: cinderella.webp
