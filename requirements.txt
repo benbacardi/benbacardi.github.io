@@ -3,7 +3,7 @@ docutils==0.19
 feedgenerator==2.0.0
 importlib-metadata==6.0.0
 Jinja2==3.1.6
-Markdown==3.4.1
+Markdown==3.8.1
 markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 mdurl==0.1.2
